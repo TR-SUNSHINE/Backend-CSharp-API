@@ -1,11 +1,14 @@
 ﻿//using Amazon.Lambda.Core;
+using LambdaCSharpWebAPI.Models;
 using MySql.Data.MySqlClient;
+using System.Collections;
 
 namespace LambdaCSharpWebAPI.Data
 {
     public class Database
     {
         private MySqlConnection connection;
+        private MySqlDataReader dbReader;
         private string dbHost;
         private string dbPort;
         private string dbName;
@@ -60,20 +63,66 @@ namespace LambdaCSharpWebAPI.Data
                 this.CloseConnection();
             }
         }
-        public MySqlDataReader Select(string query, MySqlParameter[] dbParamArray)
+        public ArrayList GetTasks()
         {
+            string selectQuery = "SELECT * FROM task";
+            return GetData(selectQuery, null, "TaskListModel");
+        }
+        public ArrayList GetTasks(string taskId)
+        {
+            string selectQuery = "SELECT * FROM task WHERE taskId = @taskId";
+            MySqlParameter[] dbParams = {
+                    new MySqlParameter("@taskId",taskId)
+                 };
+            return GetData(selectQuery, dbParams, "TaskListModel");
+        }
+        private ArrayList GetData(string selectQuery, MySqlParameter[] dbParams, string objectModelType)
+        {
+            ArrayList data = new ArrayList();
+            object obj;
+
             if (this.OpenConnection() == true)
             {
-                MySqlCommand myCommand = new MySqlCommand(query, connection);
-                myCommand.CommandText = query;
-                myCommand.Parameters.AddRange(dbParamArray);
-                return myCommand.ExecuteReader();
-            }
-            else
-            {
-                return null;
-            }
+                MySqlCommand myCommand = new MySqlCommand(selectQuery, connection);
+                myCommand.CommandText = selectQuery;
+                if (dbParams != null) myCommand.Parameters.AddRange(dbParams);
 
+                dbReader = myCommand.ExecuteReader();
+
+                if (dbReader.HasRows)
+                {
+                    while (dbReader.Read())
+                    {
+                        switch (objectModelType)
+                        {
+                            case "TaskListModel":
+                                obj = new TaskListModel
+                                {
+                                    TaskId = dbReader.GetString("taskId"),
+                                    UserId = dbReader.GetString("userId"),
+                                    Description = dbReader.GetString("description"),
+                                    Completed = dbReader.GetBoolean("completed")
+                                };
+                                data.Add(obj);
+                                break;
+
+                            case "RatingModel":
+                                obj = new TaskListModel
+                                {
+                                    TaskId = dbReader.GetString("taskId"),
+                                    UserId = dbReader.GetString("userId"),
+                                    Description = dbReader.GetString("description"),
+                                    Completed = dbReader.GetBoolean("completed")
+                                };
+                                data.Add(obj);
+                                break;
+                        }
+                    }
+                }
+            }
+            dbReader.Close();
+            this.CloseConnection();
+            return data;
         }
         private void Initialize()
         {

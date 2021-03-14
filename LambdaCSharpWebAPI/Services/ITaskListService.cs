@@ -5,8 +5,9 @@ namespace LambdaCSharpWebAPI.Services
 {
     public interface ITaskListService
     {
-        ArrayList GetSingleItemFromTaskList(string taskId);
-        void AddItemsToTaskList(TaskListModel taskList);
-        void RemoveItem(string name);
+        ArrayList GetTasks(string taskId);
+        ArrayList GetTasks();
+        void AddTask(TaskListModel taskList);
+        void DeleteTask(string name);
     }
 }

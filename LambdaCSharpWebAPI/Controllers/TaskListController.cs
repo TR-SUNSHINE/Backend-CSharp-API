@@ -14,12 +14,29 @@ namespace LambdaCSharpWebAPI.Controllers
         {
             this.taskListService = taskListService;
         }
-        [HttpGet("task/{taskId}")]
+        [HttpGet("{taskId}")]
         public IActionResult GetSingleTask(string taskId)
         {
             try
             {
-                var result = taskListService.GetSingleItemFromTaskList(taskId);
+                var result = taskListService.GetTasks(taskId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+        [HttpGet]
+        public IActionResult GetAllTasks()
+        {
+            try
+            {
+                var result = taskListService.GetTasks();
                 return Ok(result);
             }
             catch (ArgumentException ex)
@@ -33,11 +50,11 @@ namespace LambdaCSharpWebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddItemToTaskList([FromBody]TaskListModel taskList)
+        public IActionResult AddTask([FromBody]TaskListModel taskList)
         {
             try
             {
-                taskListService.AddItemsToTaskList(taskList);
+                taskListService.AddTask(taskList);
 
                 return Ok();
             }
@@ -48,11 +65,11 @@ namespace LambdaCSharpWebAPI.Controllers
         }
 
         [HttpDelete]
-        public IActionResult DeleteItemsFromTaskList([FromBody]TaskListModel taskList)
+        public IActionResult DeleteTask([FromBody]TaskListModel taskList)
         {
             try
             {
-                taskListService.RemoveItem(taskList.Description);
+                taskListService.DeleteTask(taskList.Description);
                 return Ok();
             }
             catch (Exception ex)
