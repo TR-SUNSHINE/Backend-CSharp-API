@@ -69,7 +69,21 @@ namespace LambdaCSharpWebAPI.Controllers
         {
             try
             {
-                taskListService.DeleteTask(taskList.Description);
+                taskListService.DeleteTask(taskList.TaskId);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpPut]
+        public IActionResult UpdateTask([FromBody]TaskListModel taskList)
+        {
+            try
+            {
+                taskListService.UpdateTask(taskList);
                 return Ok();
             }
             catch (Exception ex)

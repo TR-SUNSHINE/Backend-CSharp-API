@@ -8,6 +8,7 @@ namespace LambdaCSharpWebAPI.Services
         ArrayList GetTasks(string taskId);
         ArrayList GetTasks();
         void AddTask(TaskListModel taskList);
-        void DeleteTask(string name);
+        void DeleteTask(string taskId);
+        void UpdateTask(TaskListModel taskList);
     }
 }

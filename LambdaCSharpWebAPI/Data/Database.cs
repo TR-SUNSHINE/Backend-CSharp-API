@@ -51,6 +51,28 @@ namespace LambdaCSharpWebAPI.Data
                 this.CloseConnection();
             }
         }
+        private void UpdateData(string queryStatement, MySqlParameter[] dbParams)
+        {
+            if (this.OpenConnection() == true)
+            {
+                MySqlCommand command = new MySqlCommand(queryStatement, connection);
+                if (dbParams != null) command.Parameters.AddRange(dbParams);
+
+                command.ExecuteNonQuery();
+                this.CloseConnection();
+            }
+        }
+        private void DeleteData(string queryStatement, MySqlParameter[] dbParams)
+        {
+            if (this.OpenConnection() == true)
+            {
+                MySqlCommand command = new MySqlCommand(queryStatement, connection);
+                if (dbParams != null) command.Parameters.AddRange(dbParams);
+
+                command.ExecuteNonQuery();
+                this.CloseConnection();
+            }
+        }
         public void AddTask(TaskListModel task)
         {
             string queryStatement = "INSERT INTO task VALUES (@taskId, @userId, @description, @completed)";
@@ -62,27 +84,26 @@ namespace LambdaCSharpWebAPI.Data
              };
             InsertData(queryStatement, dbParams);
         }
-        public void Update(string query)
+        public void DeleteTask(string taskId)
         {
-            if (this.OpenConnection() == true)
-            {
-                MySqlCommand cmd = new MySqlCommand();
-                cmd.CommandText = query;
-                cmd.Connection = connection;
+            string queryStatement = "DELETE FROM task WHERE taskId = @taskId";
+            MySqlParameter[] dbParams = {
+                new MySqlParameter("@taskId",taskId)
+             };
+            DeleteData(queryStatement, dbParams);
+        }
+        public void UpdateTask(TaskListModel task)
+        {
+            string queryStatement = "Update task SET userId = @userId, description = @description, completed = @completed WHERE taskId = @taskId";
+            MySqlParameter[] dbParams = {
+                new MySqlParameter("@taskId",task.TaskId),
+                new MySqlParameter("@userId",task.UserId),
+                new MySqlParameter("@description",task.Description),
+                new MySqlParameter("@completed",task.Completed)
+             };
+            UpdateData(queryStatement, dbParams);
+        }
 
-                cmd.ExecuteNonQuery();
-                this.CloseConnection();
-            }
-        }
-        public void Delete(string query)
-        {
-            if (this.OpenConnection() == true)
-            {
-                MySqlCommand cmd = new MySqlCommand(query, connection);
-                cmd.ExecuteNonQuery();
-                this.CloseConnection();
-            }
-        }
         public ArrayList GetTasks()
         {
             string queryStatement = "SELECT * FROM task";

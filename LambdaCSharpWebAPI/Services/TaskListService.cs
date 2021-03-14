@@ -26,9 +26,14 @@ namespace LambdaCSharpWebAPI.Services
             database.AddTask(taskList);
         }
 
-        public void DeleteTask(string taskListName)
+        public void DeleteTask(string taskId)
         {
+            database.DeleteTask(taskId);
+        }
 
+        public void UpdateTask(TaskListModel taskList)
+        {
+            database.UpdateTask(taskList);
         }
 
     }
