@@ -16,6 +16,12 @@ namespace LambdaCSharpWebAPI.Data
         private string dbPassword;
         private string connectionString;
 
+        enum Models
+        {
+            TaskListModel,
+            RatingModdel
+        }
+
         public Database()
         {
             Initialize();
@@ -33,14 +39,28 @@ namespace LambdaCSharpWebAPI.Data
                 return false;
             }
         }
-        public void Insert(string query)
+
+        private void InsertData(string queryStatement, MySqlParameter[] dbParams)
         {
             if (this.OpenConnection() == true)
             {
-                MySqlCommand cmd = new MySqlCommand(query, connection);
-                cmd.ExecuteNonQuery();
+                MySqlCommand command = new MySqlCommand(queryStatement, connection);
+                if (dbParams != null) command.Parameters.AddRange(dbParams);
+
+                command.ExecuteNonQuery();
                 this.CloseConnection();
             }
+        }
+        public void AddTask(TaskListModel task)
+        {
+            string queryStatement = "INSERT INTO task VALUES (@taskId, @userId, @description, @completed)";
+            MySqlParameter[] dbParams = {
+                new MySqlParameter("@taskId",task.TaskId),
+                new MySqlParameter("@userId",task.UserId),
+                new MySqlParameter("@description",task.Description),
+                new MySqlParameter("@completed",task.Completed)
+             };
+            InsertData(queryStatement, dbParams);
         }
         public void Update(string query)
         {
@@ -65,29 +85,29 @@ namespace LambdaCSharpWebAPI.Data
         }
         public ArrayList GetTasks()
         {
-            string selectQuery = "SELECT * FROM task";
-            return GetData(selectQuery, null, "TaskListModel");
+            string queryStatement = "SELECT * FROM task";
+            return GetData(queryStatement, null, Models.TaskListModel);
         }
         public ArrayList GetTasks(string taskId)
         {
-            string selectQuery = "SELECT * FROM task WHERE taskId = @taskId";
+            string queryStatement = "SELECT * FROM task WHERE taskId = @taskId";
             MySqlParameter[] dbParams = {
-                    new MySqlParameter("@taskId",taskId)
-                 };
-            return GetData(selectQuery, dbParams, "TaskListModel");
+                new MySqlParameter("@taskId",taskId)
+            };
+            return GetData(queryStatement, dbParams, Models.TaskListModel);
         }
-        private ArrayList GetData(string selectQuery, MySqlParameter[] dbParams, string objectModelType)
+        private ArrayList GetData(string queryStatement, MySqlParameter[] dbParams, Models objectModelType)
         {
             ArrayList data = new ArrayList();
             object obj;
 
             if (this.OpenConnection() == true)
             {
-                MySqlCommand myCommand = new MySqlCommand(selectQuery, connection);
-                myCommand.CommandText = selectQuery;
-                if (dbParams != null) myCommand.Parameters.AddRange(dbParams);
+                MySqlCommand command = new MySqlCommand(queryStatement, connection);
+                command.CommandText = queryStatement;
+                if (dbParams != null) command.Parameters.AddRange(dbParams);
 
-                dbReader = myCommand.ExecuteReader();
+                dbReader = command.ExecuteReader();
 
                 if (dbReader.HasRows)
                 {
@@ -95,7 +115,7 @@ namespace LambdaCSharpWebAPI.Data
                     {
                         switch (objectModelType)
                         {
-                            case "TaskListModel":
+                            case Models.TaskListModel:
                                 obj = new TaskListModel
                                 {
                                     TaskId = dbReader.GetString("taskId"),
@@ -106,7 +126,7 @@ namespace LambdaCSharpWebAPI.Data
                                 data.Add(obj);
                                 break;
 
-                            case "RatingModel":
+                            case Models.RatingModdel:
                                 obj = new TaskListModel
                                 {
                                     TaskId = dbReader.GetString("taskId"),

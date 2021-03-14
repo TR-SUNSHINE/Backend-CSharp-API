@@ -23,7 +23,7 @@ namespace LambdaCSharpWebAPI.Services
 
         public void AddTask(TaskListModel taskList)
         {
-
+            database.AddTask(taskList);
         }
 
         public void DeleteTask(string taskListName)
