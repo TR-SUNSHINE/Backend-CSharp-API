@@ -3,6 +3,8 @@ using LambdaCSharpWebAPI.Models;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 
 namespace LambdaCSharpWebAPI.Data
 {
@@ -222,6 +224,56 @@ namespace LambdaCSharpWebAPI.Data
 
             return data;
         }
+        public ArrayList GetWalks(string walkId)
+        {
+            ArrayList dataWalk = null;
+            ArrayList dataRoute = null;
+
+            string queryStatementWalk =
+               "SELECT " +
+               "   id," +
+               "   walkName," +
+               "   userID " +
+               "FROM " +
+               "   walk " +
+               "WHERE " +
+                "  id = @walkId";
+            MySqlParameter[] dbParamsWalk = {
+                new MySqlParameter("@walkId",walkId)
+            };
+
+            string queryStatementRoute =
+            "SELECT " +
+            "    id," +
+            "    sequence," +
+            "    X(coords) AS lat," +
+            "    Y(coords) AS lng," +
+            "    walkID " +
+            "FROM " +
+            "    route  " +
+            "WHERE " +
+             "   walkID = @walkId";
+            MySqlParameter[] dbParamsRoute = {
+                new MySqlParameter("@walkId",walkId)
+            };
+
+            this.OpenConnection();
+            dataWalk = this.GetData(queryStatementWalk, dbParamsWalk, Models.WalkModel);
+            dataRoute = this.GetData(queryStatementRoute, dbParamsRoute, Models.RouteModel);
+            this.CloseConnection();
+
+            if (dataWalk.Count > 0)
+            {
+                WalkModel walk = (WalkModel)dataWalk[0];
+                walk.Routes = new List<RouteModel>();
+
+                foreach (RouteModel route in dataRoute)
+                {
+                    walk.Routes.Add(route);
+                }
+            }
+            return dataWalk;
+        }
         private void Initialize()
         {
             dbHost = System.Environment.GetEnvironmentVariable("DB_HOST");
@@ -249,7 +301,10 @@ namespace LambdaCSharpWebAPI.Data
         {
             try
             {
-                connection.Open();
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Open();
+                }
             }
             catch (MySqlException ex)
             {
@@ -357,6 +412,27 @@ namespace LambdaCSharpWebAPI.Data
                                 UserId = dbReader.GetString("userId"),
                                 Description = dbReader.GetString("description"),
                                 Completed = dbReader.GetBoolean("completed")
+                            };
+                            data.Add(obj);
+                            break;
+
+                        case Models.WalkModel:
+                            obj = new WalkModel
+                            {
+                                Id = dbReader.GetString("id"),
+                                WalkName = dbReader.GetString("walkName"),
+                                UserID = dbReader.GetString("userID")
+                            };
+                            data.Add(obj);
+                            break;
+                        case Models.RouteModel:
+                            obj = new RouteModel
+                            {
+                                Id = dbReader.GetString("id"),
+                                Sequence = dbReader.GetInt32("sequence"),
+                                Lat = dbReader.GetDouble("lat"),
+                                Lng = dbReader.GetDouble("lng"),
+                                WalkId = dbReader.GetString("walkID")
                             };
                             data.Add(obj);
                             break;

@@ -1,5 +1,6 @@
 ﻿using LambdaCSharpWebAPI.Data;
 using LambdaCSharpWebAPI.Models;
+using System.Collections;
 
 namespace LambdaCSharpWebAPI.Services
 {
@@ -14,6 +15,10 @@ namespace LambdaCSharpWebAPI.Services
         public void AddWalk(WalkModel walk)
         {
             database.AddWalk(walk);
+        }
+        public ArrayList GetWalks(string walkId)
+        {
+            return database.GetWalks(walkId);
         }
 
     }

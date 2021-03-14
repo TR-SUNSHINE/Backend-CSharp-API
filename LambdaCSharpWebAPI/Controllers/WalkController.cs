@@ -28,5 +28,22 @@ namespace LambdaCSharpWebAPI.Controllers
                 return StatusCode(500, ex);
             }
         }
+        [HttpGet("{walkId}")]
+        public IActionResult GetWalk(string walkId)
+        {
+            try
+            {
+                var result = walkService.GetWalks(walkId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
     }
 }
