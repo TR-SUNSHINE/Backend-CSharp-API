@@ -15,18 +15,137 @@ namespace LambdaCSharpWebAPI.Data
         private string dbUser;
         private string dbPassword;
         private string connectionString;
-
-        enum Models
+        private enum Models
         {
             TaskListModel,
             RatingModdel
         }
-
         public Database()
         {
             Initialize();
         }
-        public bool CloseConnection()
+        public void AddTask(TaskListModel task)
+        {
+            string queryStatement =
+                "INSERT INTO " +
+                "   task " +
+                "VALUES " +
+                "(" +
+                "   UUID(), " +
+                "   @userId, " +
+                "   @description, " +
+                "   @completed" +
+                ")";
+            MySqlParameter[] dbParams = {
+                new MySqlParameter("@userId",task.UserId),
+                new MySqlParameter("@description",task.Description),
+                new MySqlParameter("@completed",task.Completed)
+             };
+            InsertData(queryStatement, dbParams);
+        }
+        public void UpdateTask(TaskListModel task)
+        {
+            string queryStatement = "" +
+                "UPDATE " +
+                "   task " +
+                "SET " +
+                "   userId = @userId, " +
+                "   description = @description, " +
+                "   completed = @completed " +
+                "WHERE " +
+                "   taskId = @taskId";
+            MySqlParameter[] dbParams = {
+                new MySqlParameter("@taskId",task.TaskId),
+                new MySqlParameter("@userId",task.UserId),
+                new MySqlParameter("@description",task.Description),
+                new MySqlParameter("@completed",task.Completed)
+             };
+            UpdateData(queryStatement, dbParams);
+        }
+        public void DeleteTask(string taskId)
+        {
+            string queryStatement = "" +
+                "DELETE FROM " +
+                "   task " +
+                "WHERE " +
+                "   taskId = @taskId";
+            MySqlParameter[] dbParams = {
+                new MySqlParameter("@taskId",taskId)
+             };
+            DeleteData(queryStatement, dbParams);
+        }
+        public ArrayList GetTasks()
+        {
+            string queryStatement = "" +
+                "SELECT " +
+                "   * " +
+                "FROM " +
+                "   task";
+            return GetData(queryStatement, null, Models.TaskListModel);
+        }
+        public ArrayList GetTasks(string taskId)
+        {
+            string queryStatement = "" +
+                "SELECT " +
+                "   * " +
+                "FROM " +
+                "   task " +
+                "WHERE " +
+                "   taskId = @taskId";
+            MySqlParameter[] dbParams = {
+                new MySqlParameter("@taskId",taskId)
+            };
+            return GetData(queryStatement, dbParams, Models.TaskListModel);
+        }
+        private void Initialize()
+        {
+            dbHost = System.Environment.GetEnvironmentVariable("DB_HOST");
+            dbPort = System.Environment.GetEnvironmentVariable("DB_PORT");
+            dbName = System.Environment.GetEnvironmentVariable("DB_NAME");
+            dbUser = System.Environment.GetEnvironmentVariable("DB_USER");
+            dbPassword = System.Environment.GetEnvironmentVariable("DB_PASSWORD");
+
+            connectionString =
+                "SERVER=" + dbHost + ";" +
+                "DATABASE=" + dbName + ";" +
+                "PORT=" + dbPort + ";" +
+                "USER=" + dbUser + ";" +
+                "PASSWORD=" + dbPassword + ";";
+            try
+            {
+                connection = new MySqlConnection(connectionString);
+            }
+            catch (MySqlException ex)
+            {
+                //LambdaLogger.Log("ERROR - Creating mySQL connection: " + ex.Message);
+            }
+        }
+        private bool OpenConnection()
+        {
+            try
+            {
+                connection.Open();
+                return true;
+            }
+            catch (MySqlException ex)
+            {
+                switch (ex.Number)
+                {
+                    case 0:
+                        //LambdaLogger.Log("ERROR - Issue connecting to the server: " + ex.Message);
+                        break;
+
+                    case 1045:
+                        //LambdaLogger.Log("ERROR - Invalid username or password: " + ex.Message);
+                        break;
+                    default:
+                        //LambdaLogger.Log("ERROR - " + ex.Message);
+                        break;
+                }
+                return false;
+            }
+        }
+        private bool CloseConnection()
         {
             try
             {
@@ -39,7 +158,6 @@ namespace LambdaCSharpWebAPI.Data
                 return false;
             }
         }
-
         private void InsertData(string queryStatement, MySqlParameter[] dbParams)
         {
             if (this.OpenConnection() == true)
@@ -72,50 +190,6 @@ namespace LambdaCSharpWebAPI.Data
                 command.ExecuteNonQuery();
                 this.CloseConnection();
             }
-        }
-        public void AddTask(TaskListModel task)
-        {
-            string queryStatement = "INSERT INTO task VALUES (@taskId, @userId, @description, @completed)";
-            MySqlParameter[] dbParams = {
-                new MySqlParameter("@taskId",task.TaskId),
-                new MySqlParameter("@userId",task.UserId),
-                new MySqlParameter("@description",task.Description),
-                new MySqlParameter("@completed",task.Completed)
-             };
-            InsertData(queryStatement, dbParams);
-        }
-        public void DeleteTask(string taskId)
-        {
-            string queryStatement = "DELETE FROM task WHERE taskId = @taskId";
-            MySqlParameter[] dbParams = {
-                new MySqlParameter("@taskId",taskId)
-             };
-            DeleteData(queryStatement, dbParams);
-        }
-        public void UpdateTask(TaskListModel task)
-        {
-            string queryStatement = "Update task SET userId = @userId, description = @description, completed = @completed WHERE taskId = @taskId";
-            MySqlParameter[] dbParams = {
-                new MySqlParameter("@taskId",task.TaskId),
-                new MySqlParameter("@userId",task.UserId),
-                new MySqlParameter("@description",task.Description),
-                new MySqlParameter("@completed",task.Completed)
-             };
-            UpdateData(queryStatement, dbParams);
-        }
-
-        public ArrayList GetTasks()
-        {
-            string queryStatement = "SELECT * FROM task";
-            return GetData(queryStatement, null, Models.TaskListModel);
-        }
-        public ArrayList GetTasks(string taskId)
-        {
-            string queryStatement = "SELECT * FROM task WHERE taskId = @taskId";
-            MySqlParameter[] dbParams = {
-                new MySqlParameter("@taskId",taskId)
-            };
-            return GetData(queryStatement, dbParams, Models.TaskListModel);
         }
         private ArrayList GetData(string queryStatement, MySqlParameter[] dbParams, Models objectModelType)
         {
@@ -164,55 +238,6 @@ namespace LambdaCSharpWebAPI.Data
             dbReader.Close();
             this.CloseConnection();
             return data;
-        }
-        private void Initialize()
-        {
-            dbHost = System.Environment.GetEnvironmentVariable("DB_HOST");
-            dbPort = System.Environment.GetEnvironmentVariable("DB_PORT");
-            dbName = System.Environment.GetEnvironmentVariable("DB_NAME");
-            dbUser = System.Environment.GetEnvironmentVariable("DB_USER");
-            dbPassword = System.Environment.GetEnvironmentVariable("DB_PASSWORD");
-
-            connectionString =
-                "SERVER=" + dbHost + ";" +
-                "DATABASE=" + dbName + ";" +
-                "PORT=" + dbPort + ";" +
-                "USER=" + dbUser + ";" +
-                "PASSWORD=" + dbPassword + ";";
-
-            try
-            {
-                connection = new MySqlConnection(connectionString);
-            }
-            catch (MySqlException ex)
-            {
-                //LambdaLogger.Log("ERROR - Creating mySQL connection: " + ex.Message);
-            }
-        }
-        private bool OpenConnection()
-        {
-            try
-            {
-                connection.Open();
-                return true;
-            }
-            catch (MySqlException ex)
-            {
-                switch (ex.Number)
-                {
-                    case 0:
-                        //LambdaLogger.Log("ERROR - Issue connecting to the server: " + ex.Message);
-                        break;
-
-                    case 1045:
-                        //LambdaLogger.Log("ERROR - Invalid username or password: " + ex.Message);
-                        break;
-                    default:
-                        //LambdaLogger.Log("ERROR - " + ex.Message);
-                        break;
-                }
-                return false;
-            }
         }
     }
 }

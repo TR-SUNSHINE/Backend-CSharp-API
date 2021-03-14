@@ -48,7 +48,6 @@ namespace LambdaCSharpWebAPI.Controllers
                 return StatusCode(500, ex);
             }
         }
-
         [HttpPost]
         public IActionResult AddTask([FromBody]TaskListModel taskList)
         {
@@ -63,7 +62,6 @@ namespace LambdaCSharpWebAPI.Controllers
                 return StatusCode(500, ex);
             }
         }
-
         [HttpDelete]
         public IActionResult DeleteTask([FromBody]TaskListModel taskList)
         {
@@ -77,7 +75,6 @@ namespace LambdaCSharpWebAPI.Controllers
                 return StatusCode(500, ex);
             }
         }
-
         [HttpPut]
         public IActionResult UpdateTask([FromBody]TaskListModel taskList)
         {
