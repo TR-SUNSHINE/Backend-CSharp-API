@@ -18,17 +18,48 @@ namespace LambdaCSharpWebAPI.Data
         private enum Models
         {
             TaskListModel,
-            RatingModdel
+            RatingModel
         }
         public Database()
         {
             Initialize();
+        }
+        public void AddRating(RatingModel rating)
+        {
+            string queryStatement =
+                "INSERT INTO " +
+                "   rating" +
+                "(" +
+                "   userID," +
+                "   walkID," +
+                "   walkRating," +
+                "   walkTime" +
+                ") " +
+                "VALUES " +
+                "(" +
+                "   @userID, " +
+                "   @walkID, " +
+                "   @walkRating, " +
+                "   SYSDATE()" +
+                ")";
+            MySqlParameter[] dbParams = {
+                new MySqlParameter("@userID",rating.UserId),
+                new MySqlParameter("@walkID",rating.WalkId),
+                new MySqlParameter("@walkRating",rating.WalkRating)
+             };
+            this.InsertData(queryStatement, dbParams);
         }
         public void AddTask(TaskListModel task)
         {
             string queryStatement =
                 "INSERT INTO " +
                 "   task " +
+                "(" +
+                "   taskId," +
+                "   userId," +
+                "   description," +
+                "   completed" +
+                ")" +
                 "VALUES " +
                 "(" +
                 "   UUID(), " +
@@ -41,7 +72,7 @@ namespace LambdaCSharpWebAPI.Data
                 new MySqlParameter("@description",task.Description),
                 new MySqlParameter("@completed",task.Completed)
              };
-            InsertData(queryStatement, dbParams);
+            this.InsertData(queryStatement, dbParams);
         }
         public void UpdateTask(TaskListModel task)
         {
@@ -60,7 +91,7 @@ namespace LambdaCSharpWebAPI.Data
                 new MySqlParameter("@description",task.Description),
                 new MySqlParameter("@completed",task.Completed)
              };
-            UpdateData(queryStatement, dbParams);
+            this.UpdateData(queryStatement, dbParams);
         }
         public void DeleteTask(string taskId)
         {
@@ -72,7 +103,7 @@ namespace LambdaCSharpWebAPI.Data
             MySqlParameter[] dbParams = {
                 new MySqlParameter("@taskId",taskId)
              };
-            DeleteData(queryStatement, dbParams);
+            this.DeleteData(queryStatement, dbParams);
         }
         public ArrayList GetTasks()
         {
@@ -81,7 +112,7 @@ namespace LambdaCSharpWebAPI.Data
                 "   * " +
                 "FROM " +
                 "   task";
-            return GetData(queryStatement, null, Models.TaskListModel);
+            return this.GetData(queryStatement, null, Models.TaskListModel);
         }
         public ArrayList GetTasks(string taskId)
         {
@@ -95,7 +126,7 @@ namespace LambdaCSharpWebAPI.Data
             MySqlParameter[] dbParams = {
                 new MySqlParameter("@taskId",taskId)
             };
-            return GetData(queryStatement, dbParams, Models.TaskListModel);
+            return this.GetData(queryStatement, dbParams, Models.TaskListModel);
         }
         private void Initialize()
         {
@@ -120,12 +151,11 @@ namespace LambdaCSharpWebAPI.Data
                 //LambdaLogger.Log("ERROR - Creating mySQL connection: " + ex.Message);
             }
         }
-        private bool OpenConnection()
+        private void OpenConnection()
         {
             try
             {
                 connection.Open();
-                return true;
             }
             catch (MySqlException ex)
             {
@@ -142,53 +172,75 @@ namespace LambdaCSharpWebAPI.Data
                         //LambdaLogger.Log("ERROR - " + ex.Message);
                         break;
                 }
-                return false;
             }
         }
-        private bool CloseConnection()
+        private void CloseConnection()
         {
             try
             {
                 connection.Close();
-                return true;
             }
             catch (MySqlException ex)
             {
                 //LambdaLogger.Log(ex.Message);
-                return false;
             }
         }
         private void InsertData(string queryStatement, MySqlParameter[] dbParams)
         {
-            if (this.OpenConnection() == true)
+            try
             {
+                this.OpenConnection();
                 MySqlCommand command = new MySqlCommand(queryStatement, connection);
                 if (dbParams != null) command.Parameters.AddRange(dbParams);
 
                 command.ExecuteNonQuery();
+            }
+            catch (MySqlException ex)
+            {
+                //LambdaLogger.Log(ex.Message);
+
+            }
+            finally
+            {
                 this.CloseConnection();
             }
         }
         private void UpdateData(string queryStatement, MySqlParameter[] dbParams)
         {
-            if (this.OpenConnection() == true)
+            try
             {
+                this.OpenConnection();
                 MySqlCommand command = new MySqlCommand(queryStatement, connection);
                 if (dbParams != null) command.Parameters.AddRange(dbParams);
 
                 command.ExecuteNonQuery();
+            }
+            catch (MySqlException ex)
+            {
+                //LambdaLogger.Log(ex.Message);
+            }
+            finally
+            {
                 this.CloseConnection();
             }
         }
         private void DeleteData(string queryStatement, MySqlParameter[] dbParams)
         {
-            if (this.OpenConnection() == true)
+            try
             {
+                this.OpenConnection();
                 MySqlCommand command = new MySqlCommand(queryStatement, connection);
                 if (dbParams != null) command.Parameters.AddRange(dbParams);
 
                 command.ExecuteNonQuery();
+            }
+            catch (MySqlException ex)
+            {
+                //LambdaLogger.Log(ex.Message);
                 this.CloseConnection();
+            }
+            finally
+            {
             }
         }
         private ArrayList GetData(string queryStatement, MySqlParameter[] dbParams, Models objectModelType)
@@ -196,8 +248,9 @@ namespace LambdaCSharpWebAPI.Data
             ArrayList data = new ArrayList();
             object obj;
 
-            if (this.OpenConnection() == true)
+            try
             {
+                this.OpenConnection();
                 MySqlCommand command = new MySqlCommand(queryStatement, connection);
                 command.CommandText = queryStatement;
                 if (dbParams != null) command.Parameters.AddRange(dbParams);
@@ -221,13 +274,14 @@ namespace LambdaCSharpWebAPI.Data
                                 data.Add(obj);
                                 break;
 
-                            case Models.RatingModdel:
-                                obj = new TaskListModel
+
+                            case Models.RatingModel:
+                                obj = new RatingModel
                                 {
-                                    TaskId = dbReader.GetString("taskId"),
-                                    UserId = dbReader.GetString("userId"),
-                                    Description = dbReader.GetString("description"),
-                                    Completed = dbReader.GetBoolean("completed")
+                                    UserId = dbReader.GetString("userID"),
+                                    WalkId = dbReader.GetString("walkID"),
+                                    WalkRating = dbReader.GetInt32("walkRating"),
+                                    WalkTime = dbReader.GetDateTime("WalkTime")
                                 };
                                 data.Add(obj);
                                 break;
@@ -235,8 +289,16 @@ namespace LambdaCSharpWebAPI.Data
                     }
                 }
             }
-            dbReader.Close();
-            this.CloseConnection();
+            catch (MySqlException ex)
+            {
+                //LambdaLogger.Log(ex.Message);
+                this.CloseConnection();
+            }
+            finally
+            {
+                dbReader.Close();
+                this.CloseConnection();
+            }
             return data;
         }
     }

@@ -22,6 +22,7 @@ namespace LambdaCSharpWebAPI
         {
             services.AddControllers();
             services.AddSingleton<ITaskListService, TaskListService>();
+            services.AddSingleton<IRatingService, RatingService>();
 
         }
 
