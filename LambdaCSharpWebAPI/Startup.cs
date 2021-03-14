@@ -23,7 +23,7 @@ namespace LambdaCSharpWebAPI
             services.AddControllers();
             services.AddSingleton<ITaskListService, TaskListService>();
             services.AddSingleton<IRatingService, RatingService>();
-
+            services.AddSingleton<IWalkService, WalkService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
