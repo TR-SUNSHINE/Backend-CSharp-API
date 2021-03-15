@@ -5,10 +5,10 @@ namespace LambdaCSharpWebAPI.Services
 {
     public class RatingService : IRatingService
     {
-        private readonly Database database = null;
-        public RatingService()
+        private IDatabase database;
+        public RatingService(IDatabase database)
         {
-            database = new Database();
+            this.database = database;
         }
 
         public void AddRating(RatingModel rating)

@@ -6,10 +6,10 @@ namespace LambdaCSharpWebAPI.Services
 {
     public class TaskListService : ITaskListService
     {
-        private readonly Database database = null;
-        public TaskListService()
+        private IDatabase database;
+        public TaskListService(IDatabase database)
         {
-            database = new Database();
+            this.database = database;
         }
         public ArrayList GetTasks(string taskId)
         {
@@ -19,17 +19,17 @@ namespace LambdaCSharpWebAPI.Services
         {
             return database.GetTasks();
         }
-        public void AddTask(TaskListModel taskList)
+        public void AddTask(TaskListModel task)
         {
-            database.AddTask(taskList);
+            database.AddTask(task);
         }
         public void DeleteTask(string taskId)
         {
             database.DeleteTask(taskId);
         }
-        public void UpdateTask(TaskListModel taskList)
+        public void UpdateTask(TaskListModel task)
         {
-            database.UpdateTask(taskList);
+            database.UpdateTask(task);
         }
     }
 }

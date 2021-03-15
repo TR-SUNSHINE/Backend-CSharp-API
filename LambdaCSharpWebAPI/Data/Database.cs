@@ -8,7 +8,7 @@ using System.Data;
 
 namespace LambdaCSharpWebAPI.Data
 {
-    public class Database
+    public class Database : IDatabase
     {
         private MySqlConnection connection;
         private MySqlDataReader dbReader;
