@@ -121,7 +121,7 @@ namespace LambdaCSharpWebAPI.Data
             MySqlParameter[] dbParams = {
                 new MySqlParameter("@userID",rating.UserId),
                 new MySqlParameter("@walkID",rating.WalkId),
-                new MySqlParameter("@walkRating",rating.RatingTime)
+                new MySqlParameter("@walkRating",rating.WalkRating)
              };
             this.OpenConnection();
             this.InsertData(queryStatement, dbParams);
