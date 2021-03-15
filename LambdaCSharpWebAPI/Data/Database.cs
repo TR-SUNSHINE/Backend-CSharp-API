@@ -104,13 +104,15 @@ namespace LambdaCSharpWebAPI.Data
                 "INSERT INTO " +
                 "   rating" +
                 "(" +
+                "   id," +
                 "   userID," +
                 "   walkID," +
                 "   walkRating," +
-                "   walkTime" +
+                "   ratingTime" +
                 ") " +
                 "VALUES " +
                 "(" +
+                "   UUID(), " +
                 "   @userID, " +
                 "   @walkID, " +
                 "   @walkRating, " +
@@ -119,7 +121,7 @@ namespace LambdaCSharpWebAPI.Data
             MySqlParameter[] dbParams = {
                 new MySqlParameter("@userID",rating.UserId),
                 new MySqlParameter("@walkID",rating.WalkId),
-                new MySqlParameter("@walkRating",rating.WalkRating)
+                new MySqlParameter("@walkRating",rating.RatingTime)
              };
             this.OpenConnection();
             this.InsertData(queryStatement, dbParams);
