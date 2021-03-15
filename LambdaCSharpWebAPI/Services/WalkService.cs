@@ -6,10 +6,11 @@ namespace LambdaCSharpWebAPI.Services
 {
     public class WalkService : IWalkService
     {
-        private readonly Database database = null;
-        public WalkService()
+        private IDatabase database;
+
+        public WalkService(IDatabase database)
         {
-            database = new Database();
+            this.database = database;
         }
 
         public void AddWalk(WalkModel walk)

@@ -1,14 +1,19 @@
 ﻿using LambdaCSharpWebAPI.Models;
 using System.Collections;
 
-namespace LambdaCSharpWebAPI.Services
+namespace LambdaCSharpWebAPI.Data
 {
-    public interface ITaskListService
+    public interface IDatabase
     {
-        ArrayList GetTasks(string taskId);
+        ArrayList GetWalks(string walkId);
+        void AddWalk(WalkModel walk);
         ArrayList GetTasks();
+        ArrayList GetTasks(string taskId);
+
         void AddTask(TaskListModel task);
+
         void DeleteTask(string taskId);
         void UpdateTask(TaskListModel task);
+        void AddRating(RatingModel rating);
     }
 }
