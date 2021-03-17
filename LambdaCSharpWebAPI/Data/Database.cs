@@ -104,7 +104,9 @@ namespace LambdaCSharpWebAPI.Data
         }
         public void AddRating(RatingModel rating)
         {
-            string queryStatement =
+            try
+            {
+                string queryStatement =
                 "INSERT INTO " +
                 "   rating" +
                 "(" +
@@ -122,19 +124,34 @@ namespace LambdaCSharpWebAPI.Data
                 "   @walkRating, " +
                 "   SYSDATE()" +
                 ")";
-            MySqlParameter[] dbParams = {
+                MySqlParameter[] dbParams = {
                 new MySqlParameter("@userID",rating.UserId),
                 new MySqlParameter("@walkID",rating.WalkId),
                 new MySqlParameter("@walkRating",rating.WalkRating)
              };
-            Logger.LogDebug("Performing DB operations", "AddRating", "Database");
-            this.OpenConnection();
-            this.InsertData(queryStatement, dbParams);
-            this.CloseConnection();
+                Logger.LogDebug("Performing DB operations", "AddRating", "Database");
+                this.OpenConnection();
+                this.BeginTransaction();
+                this.InsertData(queryStatement, dbParams);
+                this.CommitTransaction();
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue adding rating to the DB", "AddRating", "Database", ex.Message);
+
+                this.RollbackTransaction();
+                //throw new Exception("ERROR: AddWalk: ", ex);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
         }
         public void AddTask(TaskListModel task)
         {
-            string queryStatement =
+            try
+            {
+                string queryStatement =
                 "INSERT INTO " +
                 "   task " +
                 "(" +
@@ -150,19 +167,34 @@ namespace LambdaCSharpWebAPI.Data
                 "   @description, " +
                 "   @completed" +
                 ")";
-            MySqlParameter[] dbParams = {
+                MySqlParameter[] dbParams = {
                 new MySqlParameter("@userId",task.UserId),
                 new MySqlParameter("@description",task.Description),
                 new MySqlParameter("@completed",task.Completed)
              };
-            Logger.LogDebug("Performing DB operations", "AddTask", "Database");
-            this.OpenConnection();
-            this.InsertData(queryStatement, dbParams);
-            this.CloseConnection();
+                Logger.LogDebug("Performing DB operations", "AddTask", "Database");
+                this.OpenConnection();
+                this.BeginTransaction();
+                this.InsertData(queryStatement, dbParams);
+                this.CommitTransaction();
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue adding task to the DB", "AddTask", "Database", ex.Message);
+
+                this.RollbackTransaction();
+                //throw new Exception("ERROR: AddWalk: ", ex);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
         }
         public void UpdateTask(TaskListModel task)
         {
-            string queryStatement = "" +
+            try
+            {
+                string queryStatement = "" +
                 "UPDATE " +
                 "   task " +
                 "SET " +
@@ -171,31 +203,59 @@ namespace LambdaCSharpWebAPI.Data
                 "   completed = @completed " +
                 "WHERE " +
                 "   taskId = @taskId";
-            MySqlParameter[] dbParams = {
+                MySqlParameter[] dbParams = {
                 new MySqlParameter("@taskId",task.TaskId),
                 new MySqlParameter("@userId",task.UserId),
                 new MySqlParameter("@description",task.Description),
                 new MySqlParameter("@completed",task.Completed)
              };
-            Logger.LogDebug("Performing DB operations", "UpdateTask", "Database");
-            this.OpenConnection();
-            this.UpdateData(queryStatement, dbParams);
-            this.CloseConnection();
+                Logger.LogDebug("Performing DB operations", "UpdateTask", "Database");
+                this.OpenConnection();
+                this.BeginTransaction();
+                this.UpdateData(queryStatement, dbParams);
+                this.CommitTransaction();
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue updating task to the DB", "UpdateTask", "Database", ex.Message);
+
+                this.RollbackTransaction();
+                //throw new Exception("ERROR: AddWalk: ", ex);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
         }
         public void DeleteTask(string taskId)
         {
-            string queryStatement = "" +
+            try
+            {
+                string queryStatement = "" +
                 "DELETE FROM " +
                 "   task " +
                 "WHERE " +
                 "   taskId = @taskId";
-            MySqlParameter[] dbParams = {
+                MySqlParameter[] dbParams = {
                 new MySqlParameter("@taskId",taskId)
              };
-            Logger.LogDebug("Performing DB operations", "DeleteTask", "Database");
-            this.OpenConnection();
-            this.DeleteData(queryStatement, dbParams);
-            this.CloseConnection();
+                Logger.LogDebug("Performing DB operations", "DeleteTask", "Database");
+                this.OpenConnection();
+                this.BeginTransaction();
+                this.DeleteData(queryStatement, dbParams);
+                this.CommitTransaction();
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue deleting task to the DB", "DeleteTask", "Database", ex.Message);
+
+                this.RollbackTransaction();
+                //throw new Exception("ERROR: AddWalk: ", ex);
+            }
+            finally
+            {
+                this.CloseConnection();
+            }
         }
         public ArrayList GetTasks()
         {
