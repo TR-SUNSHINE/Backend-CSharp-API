@@ -10,16 +10,16 @@ namespace LambdaCSharpWebAPI.Logging
         {
             if (LogLevel.ToUpper() == "DEBUG")
             {
-                LambdaLogger.Log($"DEBUG: ClassName: {className} Method: {method} Message: {message}");
+                LambdaLogger.Log($"DEBUG: |ClassName: {className} |Method: {method} |Message: {message}");
             }
         }
         public static void LogInformation(string message, string method, string className)
         {
-            LambdaLogger.Log($"INFORMATION: ClassName: {className} Method: {method} Message: {message}");
+            LambdaLogger.Log($"INFORMATION: |ClassName: {className} |Method: {method} |Message: {message}");
         }
         public static void LogError(string message, string method, string className, string exceptionMessage)
         {
-            LambdaLogger.Log($"ERROR: ClassName: {className} Method: {method} Message: {message} Exception: {exceptionMessage}");
+            LambdaLogger.Log($"ERROR: |ClassName: {className} |Method: {method} |Message: {message} |Exception: {exceptionMessage}");
         }
     }
 }
