@@ -1,4 +1,5 @@
-﻿using LambdaCSharpWebAPI.Models;
+﻿using LambdaCSharpWebAPI.Logging;
+using LambdaCSharpWebAPI.Models;
 using LambdaCSharpWebAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,6 +13,7 @@ namespace LambdaCSharpWebAPI.Controllers
 
         public RatingController(IRatingService ratingService)
         {
+            Logger.LogDebug("Setting ratingService", "RatingController", "RatingController");
             this.ratingService = ratingService;
         }
         [HttpPost]
@@ -19,6 +21,7 @@ namespace LambdaCSharpWebAPI.Controllers
         {
             try
             {
+                Logger.LogDebug("Calling AddRating", "AddRating", "RatingController");
                 ratingService.AddRating(rating);
 
                 return Ok();

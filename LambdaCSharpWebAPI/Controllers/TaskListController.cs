@@ -1,4 +1,5 @@
-﻿using LambdaCSharpWebAPI.Models;
+﻿using LambdaCSharpWebAPI.Logging;
+using LambdaCSharpWebAPI.Models;
 using LambdaCSharpWebAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,6 +13,7 @@ namespace LambdaCSharpWebAPI.Controllers
 
         public TaskListController(ITaskListService taskListService)
         {
+            Logger.LogDebug("Setting taskListService", "TaskListController", "TaskListController");
             this.taskListService = taskListService;
         }
         [HttpGet("{taskId}")]
@@ -19,6 +21,7 @@ namespace LambdaCSharpWebAPI.Controllers
         {
             try
             {
+                Logger.LogDebug("Calling GetTasks", "GetSingleTask", "TaskListController");
                 var result = taskListService.GetTasks(taskId);
                 return Ok(result);
             }
@@ -36,6 +39,7 @@ namespace LambdaCSharpWebAPI.Controllers
         {
             try
             {
+                Logger.LogDebug("Calling GetTasks", "GetAllTasks", "TaskListController");
                 var result = taskListService.GetTasks();
                 return Ok(result);
             }
@@ -53,6 +57,7 @@ namespace LambdaCSharpWebAPI.Controllers
         {
             try
             {
+                Logger.LogDebug("Calling AddTask", "AddTask", "TaskListController");
                 taskListService.AddTask(taskList);
 
                 return Ok();
@@ -67,6 +72,7 @@ namespace LambdaCSharpWebAPI.Controllers
         {
             try
             {
+                Logger.LogDebug("Calling DeleteTask", "DeleteTask", "TaskListController");
                 taskListService.DeleteTask(taskList.TaskId);
                 return Ok();
             }
@@ -80,6 +86,7 @@ namespace LambdaCSharpWebAPI.Controllers
         {
             try
             {
+                Logger.LogDebug("Calling UpdateTask", "UpdateTask", "TaskListController");
                 taskListService.UpdateTask(taskList);
                 return Ok();
             }
