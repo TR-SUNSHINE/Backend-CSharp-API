@@ -259,93 +259,118 @@ namespace LambdaCSharpWebAPI.Data
         }
         public ArrayList GetTasks()
         {
-            ArrayList data = null;
+            try
+            {
+                ArrayList data = null;
 
-            string queryStatement = "" +
-                "SELECT " +
-                "   * " +
-                "FROM " +
-                "   task";
+                string queryStatement = "" +
+                    "SELECT " +
+                    "   * " +
+                    "FROM " +
+                    "   task";
 
-            Logger.LogDebug("Performing DB operations", "GetTasks", "Database");
-            this.OpenConnection();
-            data = this.GetData(queryStatement, null, Models.TaskListModel);
-            this.CloseConnection();
+                Logger.LogDebug("Performing DB operations", "GetTasks", "Database");
+                this.OpenConnection();
+                data = this.GetData(queryStatement, null, Models.TaskListModel);
+                this.CloseConnection();
 
-            return data;
+                return data;
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue getting tasks from the DB", "GetTasks", "Database", ex.Message);
+                return null;
+            }
+
         }
         public ArrayList GetTasks(string taskId)
         {
-            ArrayList data = null;
+            try
+            {
+                ArrayList data = null;
 
-            string queryStatement = "" +
-                "SELECT " +
-                "   * " +
-                "FROM " +
-                "   task " +
-                "WHERE " +
-                "   taskId = @taskId";
-            MySqlParameter[] dbParams = {
+                string queryStatement = "" +
+                    "SELECT " +
+                    "   * " +
+                    "FROM " +
+                    "   task " +
+                    "WHERE " +
+                    "   taskId = @taskId";
+                MySqlParameter[] dbParams = {
                 new MySqlParameter("@taskId",taskId)
-            };
+                };
 
-            Logger.LogDebug("Performing DB operations", "GetTasks", "Database");
-            this.OpenConnection();
-            data = this.GetData(queryStatement, dbParams, Models.TaskListModel);
-            this.CloseConnection();
+                Logger.LogDebug("Performing DB operations", "GetTasks", "Database");
+                this.OpenConnection();
+                data = this.GetData(queryStatement, dbParams, Models.TaskListModel);
+                this.CloseConnection();
 
-            return data;
+                return data;
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue getting tasks from the DB", "GetTasks", "Database", ex.Message);
+                return null;
+            }
         }
         public ArrayList GetWalks(string walkId)
         {
-            ArrayList dataWalk = null;
-            ArrayList dataRoute = null;
-
-            string queryStatementWalk =
-               "SELECT " +
-               "   id," +
-               "   walkName," +
-               "   userID " +
-               "FROM " +
-               "   walk " +
-               "WHERE " +
-                "  id = @walkId";
-            MySqlParameter[] dbParamsWalk = {
-                new MySqlParameter("@walkId",walkId)
-            };
-
-            string queryStatementRoute =
-            "SELECT " +
-            "    id," +
-            "    sequence," +
-            "    X(coords) AS lat," +
-            "    Y(coords) AS lng," +
-            "    walkID " +
-            "FROM " +
-            "    route  " +
-            "WHERE " +
-             "   walkID = @walkId";
-            MySqlParameter[] dbParamsRoute = {
-                new MySqlParameter("@walkId",walkId)
-            };
-
-            Logger.LogDebug("Performing DB operations", "GetWalks", "Database");
-            this.OpenConnection();
-            dataWalk = this.GetData(queryStatementWalk, dbParamsWalk, Models.WalkModel);
-            dataRoute = this.GetData(queryStatementRoute, dbParamsRoute, Models.RouteModel);
-            this.CloseConnection();
-
-            if (dataWalk.Count > 0)
+            try
             {
-                WalkModel walk = (WalkModel)dataWalk[0];
-                walk.Routes = new List<RouteModel>();
+                ArrayList dataWalk = null;
+                ArrayList dataRoute = null;
 
-                foreach (RouteModel route in dataRoute)
+                string queryStatementWalk =
+                   "SELECT " +
+                   "   id," +
+                   "   walkName," +
+                   "   userID " +
+                   "FROM " +
+                   "   walk " +
+                   "WHERE " +
+                    "  id = @walkId";
+                MySqlParameter[] dbParamsWalk = {
+                new MySqlParameter("@walkId",walkId)
+            };
+
+                string queryStatementRoute =
+                "SELECT " +
+                "    id," +
+                "    sequence," +
+                "    X(coords) AS lat," +
+                "    Y(coords) AS lng," +
+                "    walkID " +
+                "FROM " +
+                "    route  " +
+                "WHERE " +
+                 "   walkID = @walkId";
+                MySqlParameter[] dbParamsRoute = {
+                new MySqlParameter("@walkId",walkId)
+            };
+
+                Logger.LogDebug("Performing DB operations", "GetWalks", "Database");
+                this.OpenConnection();
+                dataWalk = this.GetData(queryStatementWalk, dbParamsWalk, Models.WalkModel);
+                dataRoute = this.GetData(queryStatementRoute, dbParamsRoute, Models.RouteModel);
+                this.CloseConnection();
+
+                if (dataWalk.Count > 0)
                 {
-                    walk.Routes.Add(route);
+                    WalkModel walk = (WalkModel)dataWalk[0];
+                    walk.Routes = new List<RouteModel>();
+
+                    foreach (RouteModel route in dataRoute)
+                    {
+                        walk.Routes.Add(route);
+                    }
                 }
+                return dataWalk;
             }
-            return dataWalk;
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue getting walks from the DB", "GetWalks", "Database", ex.Message);
+                return null;
+            }
         }
         private void Initialize()
         {
