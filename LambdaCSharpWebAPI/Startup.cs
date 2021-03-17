@@ -1,4 +1,5 @@
 using LambdaCSharpWebAPI.Data;
+using LambdaCSharpWebAPI.Logging;
 using LambdaCSharpWebAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +29,8 @@ namespace LambdaCSharpWebAPI
             services.AddSingleton<IWalkService, WalkService>();
 
             services.AddSingleton<IDatabase, Database>();
+
+            Logger.LogLevel = Configuration.GetValue<string>("Logging:LogLevel:Default");
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>

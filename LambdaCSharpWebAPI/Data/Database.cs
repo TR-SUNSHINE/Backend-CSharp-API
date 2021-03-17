@@ -1,4 +1,5 @@
 ﻿//using Amazon.Lambda.Core;
+using LambdaCSharpWebAPI.Logging;
 using LambdaCSharpWebAPI.Models;
 using MySql.Data.MySqlClient;
 using System;
@@ -28,6 +29,7 @@ namespace LambdaCSharpWebAPI.Data
         }
         public Database()
         {
+            Logger.LogDebug("Calling Initialize", "Database", "Database");
             Initialize();
         }
         public void AddWalk(WalkModel walk)
@@ -55,6 +57,7 @@ namespace LambdaCSharpWebAPI.Data
                     new MySqlParameter("@userID",walk.UserID)
                 };
 
+                Logger.LogDebug("Performing DB operations", "AddWalk", "Database");
                 this.OpenConnection();
                 this.BeginTransaction();
                 this.InsertData(queryStatementWalk, dbParamsWalk);
@@ -89,9 +92,10 @@ namespace LambdaCSharpWebAPI.Data
             }
             catch (MySqlException ex)
             {
-                //LambdaLogger.Log(ex.Message);
+                Logger.LogError("Issue adding walk to the DB", "AddWalk", "Database", ex.Message);
+
                 this.RollbackTransaction();
-                throw new Exception("ERROR: AddWalk: ", ex);
+                //throw new Exception("ERROR: AddWalk: ", ex);
             }
             finally
             {
@@ -123,6 +127,7 @@ namespace LambdaCSharpWebAPI.Data
                 new MySqlParameter("@walkID",rating.WalkId),
                 new MySqlParameter("@walkRating",rating.WalkRating)
              };
+            Logger.LogDebug("Performing DB operations", "AddRating", "Database");
             this.OpenConnection();
             this.InsertData(queryStatement, dbParams);
             this.CloseConnection();
@@ -150,6 +155,7 @@ namespace LambdaCSharpWebAPI.Data
                 new MySqlParameter("@description",task.Description),
                 new MySqlParameter("@completed",task.Completed)
              };
+            Logger.LogDebug("Performing DB operations", "AddTask", "Database");
             this.OpenConnection();
             this.InsertData(queryStatement, dbParams);
             this.CloseConnection();
@@ -171,6 +177,7 @@ namespace LambdaCSharpWebAPI.Data
                 new MySqlParameter("@description",task.Description),
                 new MySqlParameter("@completed",task.Completed)
              };
+            Logger.LogDebug("Performing DB operations", "UpdateTask", "Database");
             this.OpenConnection();
             this.UpdateData(queryStatement, dbParams);
             this.CloseConnection();
@@ -185,6 +192,7 @@ namespace LambdaCSharpWebAPI.Data
             MySqlParameter[] dbParams = {
                 new MySqlParameter("@taskId",taskId)
              };
+            Logger.LogDebug("Performing DB operations", "DeleteTask", "Database");
             this.OpenConnection();
             this.DeleteData(queryStatement, dbParams);
             this.CloseConnection();
@@ -199,6 +207,7 @@ namespace LambdaCSharpWebAPI.Data
                 "FROM " +
                 "   task";
 
+            Logger.LogDebug("Performing DB operations", "GetTasks", "Database");
             this.OpenConnection();
             data = this.GetData(queryStatement, null, Models.TaskListModel);
             this.CloseConnection();
@@ -220,6 +229,7 @@ namespace LambdaCSharpWebAPI.Data
                 new MySqlParameter("@taskId",taskId)
             };
 
+            Logger.LogDebug("Performing DB operations", "GetTasks", "Database");
             this.OpenConnection();
             data = this.GetData(queryStatement, dbParams, Models.TaskListModel);
             this.CloseConnection();
@@ -259,6 +269,7 @@ namespace LambdaCSharpWebAPI.Data
                 new MySqlParameter("@walkId",walkId)
             };
 
+            Logger.LogDebug("Performing DB operations", "GetWalks", "Database");
             this.OpenConnection();
             dataWalk = this.GetData(queryStatementWalk, dbParamsWalk, Models.WalkModel);
             dataRoute = this.GetData(queryStatementRoute, dbParamsRoute, Models.RouteModel);
@@ -292,11 +303,12 @@ namespace LambdaCSharpWebAPI.Data
                 "PASSWORD=" + dbPassword + ";";
             try
             {
+                Logger.LogDebug("Creating MySQL connection", "Initialize", "Database");
                 connection = new MySqlConnection(connectionString);
             }
             catch (MySqlException ex)
             {
-                //LambdaLogger.Log("ERROR - Creating mySQL connection: " + ex.Message);
+                Logger.LogError("Issue initializing connection to the DB", "Initialize", "Database", ex.Message);
             }
         }
         private void OpenConnection()
@@ -305,6 +317,7 @@ namespace LambdaCSharpWebAPI.Data
             {
                 if (connection.State != ConnectionState.Open)
                 {
+                    Logger.LogDebug("Opening connection", "OpenConnection", "Database");
                     connection.Open();
                 }
             }
@@ -313,14 +326,13 @@ namespace LambdaCSharpWebAPI.Data
                 switch (ex.Number)
                 {
                     case 0:
-                        //LambdaLogger.Log("ERROR - Issue connecting to the server: " + ex.Message);
+                        Logger.LogError("Issue connecting to the server", "OpenConnection", "Database", ex.Message);
                         break;
-
                     case 1045:
-                        //LambdaLogger.Log("ERROR - Invalid username or password: " + ex.Message);
+                        Logger.LogError("Invalid username or password", "OpenConnection", "Database", ex.Message);
                         break;
                     default:
-                        //LambdaLogger.Log("ERROR - " + ex.Message);
+                        Logger.LogError("Issue opening connection", "OpenConnection", "Database", ex.Message);
                         break;
                 }
             }
@@ -329,44 +341,48 @@ namespace LambdaCSharpWebAPI.Data
         {
             try
             {
+                Logger.LogDebug("Beggining transaction", "BeginTransaction", "Database");
                 dbTrans = connection.BeginTransaction();
             }
             catch (MySqlException ex)
             {
-                //LambdaLogger.Log(ex.Message);
+                Logger.LogError("Issue beggining transaction", "BeginTransaction", "Database", ex.Message);
             }
         }
         private void CommitTransaction()
         {
             try
             {
+                Logger.LogDebug("Commiting transaction", "CommitTransaction", "Database");
                 dbTrans.Commit();
             }
             catch (MySqlException ex)
             {
-                //LambdaLogger.Log(ex.Message);
+                Logger.LogError("Issue commiting transaction", "CommitTransaction", "Database", ex.Message);
             }
         }
         private void RollbackTransaction()
         {
             try
             {
+                Logger.LogDebug("Rolling back transaction", "RollbackTransaction", "Database");
                 dbTrans.Rollback();
             }
             catch (MySqlException ex)
             {
-                //LambdaLogger.Log(ex.Message);
+                Logger.LogError("Issue rolling back transaction", "RollbackTransaction", "Database", ex.Message);
             }
         }
         private void CloseConnection()
         {
             try
             {
+                Logger.LogDebug("Closing connection", "CloseConnection", "Database");
                 connection.Close();
             }
             catch (MySqlException ex)
             {
-                //LambdaLogger.Log(ex.Message);
+                Logger.LogError("Issue closing connection", "CloseConnection", "Database", ex.Message);
             }
         }
         private void InsertData(string queryStatement, MySqlParameter[] dbParams)
@@ -374,6 +390,8 @@ namespace LambdaCSharpWebAPI.Data
             MySqlCommand command = new MySqlCommand(queryStatement, connection);
             if (dbParams != null) command.Parameters.AddRange(dbParams);
 
+            Logger.LogDebug("Inserting data", "InsertData", "Database");
+            Logger.LogDebug("queryStatement = " + queryStatement, "InsertData", "Database");
             command.ExecuteNonQuery();
         }
         private void UpdateData(string queryStatement, MySqlParameter[] dbParams)
@@ -381,6 +399,8 @@ namespace LambdaCSharpWebAPI.Data
             MySqlCommand command = new MySqlCommand(queryStatement, connection);
             if (dbParams != null) command.Parameters.AddRange(dbParams);
 
+            Logger.LogDebug("Updating data", "UpdateData", "Database");
+            Logger.LogDebug("queryStatement = " + queryStatement, "UpdateData", "Database");
             command.ExecuteNonQuery();
         }
         private void DeleteData(string queryStatement, MySqlParameter[] dbParams)
@@ -388,6 +408,8 @@ namespace LambdaCSharpWebAPI.Data
             MySqlCommand command = new MySqlCommand(queryStatement, connection);
             if (dbParams != null) command.Parameters.AddRange(dbParams);
 
+            Logger.LogDebug("Deleting data", "DeleteData", "Database");
+            Logger.LogDebug("queryStatement = " + queryStatement, "DeleteData", "Database");
             command.ExecuteNonQuery();
         }
         private ArrayList GetData(string queryStatement, MySqlParameter[] dbParams, Models objectModelType)
@@ -399,6 +421,8 @@ namespace LambdaCSharpWebAPI.Data
             command.CommandText = queryStatement;
             if (dbParams != null) command.Parameters.AddRange(dbParams);
 
+            Logger.LogDebug("Getting data", "GetData", "Database");
+            Logger.LogDebug("queryStatement = " + queryStatement, "GetData", "Database");
             dbReader = command.ExecuteReader();
 
             if (dbReader.HasRows)

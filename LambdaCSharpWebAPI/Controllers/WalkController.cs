@@ -1,4 +1,5 @@
-﻿using LambdaCSharpWebAPI.Models;
+﻿using LambdaCSharpWebAPI.Logging;
+using LambdaCSharpWebAPI.Models;
 using LambdaCSharpWebAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,6 +13,7 @@ namespace LambdaCSharpWebAPI.Controllers
 
         public WalkController(IWalkService walkService)
         {
+            Logger.LogDebug("Setting walkService", "WalkController", "WalkController");
             this.walkService = walkService;
         }
         [HttpPost]
@@ -19,6 +21,7 @@ namespace LambdaCSharpWebAPI.Controllers
         {
             try
             {
+                Logger.LogDebug("Calling AddWalk", "AddWalk", "WalkController");
                 walkService.AddWalk(walk);
 
                 return Ok();
@@ -33,6 +36,7 @@ namespace LambdaCSharpWebAPI.Controllers
         {
             try
             {
+                Logger.LogDebug("Calling GetWalks", "GetWalk", "WalkController");
                 var result = walkService.GetWalks(walkId);
                 return Ok(result);
             }
