@@ -380,15 +380,28 @@ namespace LambdaCSharpWebAPI.Data
             {
                 ArrayList dataWalk = null;
 
-                string queryStatementWalk = "SELECT walk.walkName, rating.userID, AVG(rating.walkrating) as aveRating" +
-                "FROM rating" +
-                "WHERE rating.userID=@userId" +
-                "INNER JOIN walk ON rating.walkID= walk.id" +
-                "GROUP BY rating.userID;";
+                string queryStatementWalk = "SELECT " +
+                   "   id," +
+                   "   walkName," +
+                   "   userID, " +
+                   "(SELECT " +
+                   "   AVG(rating.walkrating) " +
+                   "FROM " +
+                   "   rating " +
+                   "WHERE " +
+                    "  walk.id = rating.walkID " +
+                    "GROUP BY walkID) " +
+                   "as aveRating " +
+                   "FROM " +
+                   "   walk " +
+                   "WHERE " +
+                    "  walk.userID = @userId";
 
                 MySqlParameter[] dbParamsWalk = {
                 new MySqlParameter("@userId",userId)
             };
+
+
 
                 Logger.LogDebug("Performing DB operations", "GetWalksByUserId", "Database");
                 this.OpenConnection();
