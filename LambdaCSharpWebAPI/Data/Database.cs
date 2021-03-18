@@ -373,18 +373,17 @@ namespace LambdaCSharpWebAPI.Data
             try
             {
                 ArrayList dataWalk = null;
-
                 string queryStatementWalk = "SELECT " +
                    "   id," +
                    "   walkName," +
                    "   userID, " +
-                   "(SELECT " +
+                   "IFNULL((SELECT " +
                    "   AVG(rating.walkrating) " +
                    "FROM " +
                    "   rating " +
                    "WHERE " +
                     "  walk.id = rating.walkID " +
-                    "GROUP BY walkID) " +
+                    "GROUP BY walkID),0) " +
                    "as aveRating " +
                    "FROM " +
                    "   walk " +
