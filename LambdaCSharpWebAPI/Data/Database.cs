@@ -89,17 +89,15 @@ namespace LambdaCSharpWebAPI.Data
                     this.InsertData(queryStatementRoute, dbParamsRoute);
                 }
                 this.CommitTransaction();
+                this.CloseConnection();
             }
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue adding walk to the DB", "AddWalk", "Database", ex.Message);
 
                 this.RollbackTransaction();
-                //throw new Exception("ERROR: AddWalk: ", ex);
-            }
-            finally
-            {
                 this.CloseConnection();
+                throw new Exception(ex.Message);
             }
         }
         public void AddRating(RatingModel rating)
@@ -134,17 +132,15 @@ namespace LambdaCSharpWebAPI.Data
                 this.BeginTransaction();
                 this.InsertData(queryStatement, dbParams);
                 this.CommitTransaction();
+                this.CloseConnection();
             }
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue adding rating to the DB", "AddRating", "Database", ex.Message);
 
                 this.RollbackTransaction();
-                //throw new Exception("ERROR: AddWalk: ", ex);
-            }
-            finally
-            {
                 this.CloseConnection();
+                throw new Exception(ex.Message);
             }
         }
         public void AddTask(TaskListModel task)
@@ -177,18 +173,17 @@ namespace LambdaCSharpWebAPI.Data
                 this.BeginTransaction();
                 this.InsertData(queryStatement, dbParams);
                 this.CommitTransaction();
+                this.CloseConnection();
             }
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue adding task to the DB", "AddTask", "Database", ex.Message);
 
                 this.RollbackTransaction();
-                //throw new Exception("ERROR: AddWalk: ", ex);
-            }
-            finally
-            {
                 this.CloseConnection();
+                throw new Exception(ex.Message);
             }
+
         }
         public void UpdateTask(TaskListModel task)
         {
@@ -214,17 +209,15 @@ namespace LambdaCSharpWebAPI.Data
                 this.BeginTransaction();
                 this.UpdateData(queryStatement, dbParams);
                 this.CommitTransaction();
+                this.CloseConnection();
             }
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue updating task to the DB", "UpdateTask", "Database", ex.Message);
 
                 this.RollbackTransaction();
-                //throw new Exception("ERROR: AddWalk: ", ex);
-            }
-            finally
-            {
                 this.CloseConnection();
+                throw new Exception(ex.Message);
             }
         }
         public void DeleteTask(string taskId)
@@ -244,17 +237,15 @@ namespace LambdaCSharpWebAPI.Data
                 this.BeginTransaction();
                 this.DeleteData(queryStatement, dbParams);
                 this.CommitTransaction();
+                this.CloseConnection();
             }
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue deleting task to the DB", "DeleteTask", "Database", ex.Message);
 
                 this.RollbackTransaction();
-                //throw new Exception("ERROR: AddWalk: ", ex);
-            }
-            finally
-            {
                 this.CloseConnection();
+                throw new Exception(ex.Message);
             }
         }
         public ArrayList GetTasks()
@@ -279,7 +270,8 @@ namespace LambdaCSharpWebAPI.Data
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue getting tasks from the DB", "GetTasks", "Database", ex.Message);
-                return null;
+                this.CloseConnection();
+                throw new Exception(ex.Message);
             }
 
         }
@@ -310,7 +302,8 @@ namespace LambdaCSharpWebAPI.Data
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue getting tasks from the DB", "GetTasks", "Database", ex.Message);
-                return null;
+                this.CloseConnection();
+                throw new Exception(ex.Message);
             }
         }
         public ArrayList GetWalks(string walkId)
@@ -369,7 +362,8 @@ namespace LambdaCSharpWebAPI.Data
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue getting walks from the DB", "GetWalks", "Database", ex.Message);
-                return null;
+                this.CloseConnection();
+                throw new Exception(ex.Message);
             }
         }
         private void Initialize()
@@ -394,6 +388,7 @@ namespace LambdaCSharpWebAPI.Data
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue initializing connection to the DB", "Initialize", "Database", ex.Message);
+                throw new Exception(ex.Message);
             }
         }
         private void OpenConnection()
@@ -420,6 +415,7 @@ namespace LambdaCSharpWebAPI.Data
                         Logger.LogError("Issue opening connection", "OpenConnection", "Database", ex.Message);
                         break;
                 }
+                throw new Exception(ex.Message);
             }
         }
         private void BeginTransaction()
@@ -432,6 +428,7 @@ namespace LambdaCSharpWebAPI.Data
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue beggining transaction", "BeginTransaction", "Database", ex.Message);
+                throw new Exception(ex.Message);
             }
         }
         private void CommitTransaction()
@@ -444,6 +441,7 @@ namespace LambdaCSharpWebAPI.Data
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue commiting transaction", "CommitTransaction", "Database", ex.Message);
+                throw new Exception(ex.Message);
             }
         }
         private void RollbackTransaction()
@@ -456,6 +454,7 @@ namespace LambdaCSharpWebAPI.Data
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue rolling back transaction", "RollbackTransaction", "Database", ex.Message);
+                throw new Exception(ex.Message);
             }
         }
         private void CloseConnection()
@@ -468,6 +467,7 @@ namespace LambdaCSharpWebAPI.Data
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue closing connection", "CloseConnection", "Database", ex.Message);
+                throw new Exception(ex.Message);
             }
         }
         private void InsertData(string queryStatement, MySqlParameter[] dbParams)
