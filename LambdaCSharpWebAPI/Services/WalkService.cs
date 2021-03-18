@@ -26,5 +26,12 @@ namespace LambdaCSharpWebAPI.Services
             return database.GetWalks(walkId);
         }
 
+        // GetAllWalksByUserId
+        public ArrayList GetWalksByUserId(string userId)
+        {
+            Logger.LogDebug("Calling GetWalksByUserId", "GetWalksByUserId", "WalkService");
+            return database.GetWalksByUserId(userId);
+        }
+
     }
 }

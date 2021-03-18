@@ -372,6 +372,37 @@ namespace LambdaCSharpWebAPI.Data
                 return null;
             }
         }
+
+        // Get Walks for a User using userID
+        public ArrayList GetWalksByUserId(string userId)
+        {
+            try
+            {
+                ArrayList dataWalk = null;
+
+                string queryStatementWalk = "SELECT walk.walkName, rating.userID, AVG(rating.walkrating) as aveRating" +
+                "FROM rating" +
+                "WHERE rating.userID=@userId" +
+                "INNER JOIN walk ON rating.walkID= walk.id" +
+                "GROUP BY rating.userID;";
+
+                MySqlParameter[] dbParamsWalk = {
+                new MySqlParameter("@userId",userId)
+            };
+
+                Logger.LogDebug("Performing DB operations", "GetWalksByUserId", "Database");
+                this.OpenConnection();
+                dataWalk = this.GetData(queryStatementWalk, dbParamsWalk, Models.WalkModel);
+                this.CloseConnection();
+
+                return dataWalk;
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue getting walks from the DB", "GetWalksByUserId", "Database", ex.Message);
+                return null;
+            }
+        }
         private void Initialize()
         {
             dbHost = System.Environment.GetEnvironmentVariable("DB_HOST");
