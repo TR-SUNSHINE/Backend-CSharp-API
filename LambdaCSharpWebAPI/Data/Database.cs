@@ -1,4 +1,4 @@
-﻿//using Amazon.Lambda.Core;
+//using Amazon.Lambda.Core;
 using LambdaCSharpWebAPI.Logging;
 using LambdaCSharpWebAPI.Models;
 using MySql.Data.MySqlClient;
@@ -366,6 +366,48 @@ namespace LambdaCSharpWebAPI.Data
                 throw new Exception(ex.Message);
             }
         }
+              // Get Walks for a User using userID
+        public ArrayList GetWalksByUserId(string userId)
+        {
+            try
+            {
+                ArrayList dataWalk = null;
+                string queryStatementWalk = "SELECT " +
+                   "   id," +
+                   "   walkName," +
+                   "   userID, " +
+                   "IFNULL((SELECT " +
+                   "   AVG(rating.walkrating) " +
+                   "FROM " +
+                   "   rating " +
+                   "WHERE " +
+                    "  walk.id = rating.walkID " +
+                    "GROUP BY walkID),0) " +
+                   "as aveRating " +
+                   "FROM " +
+                   "   walk " +
+                   "WHERE " +
+                    "  walk.userID = @userId";
+
+                MySqlParameter[] dbParamsWalk = {
+                new MySqlParameter("@userId",userId)
+            };
+
+
+
+                Logger.LogDebug("Performing DB operations", "GetWalksByUserId", "Database");
+                this.OpenConnection();
+                dataWalk = this.GetData(queryStatementWalk, dbParamsWalk, Models.WalkModel);
+                this.CloseConnection();
+
+                return dataWalk;
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue getting walks from the DB", "GetWalksByUserId", "Database", ex.Message);
+                return null;
+            }
+        }
         private void Initialize()
         {
             dbHost = System.Environment.GetEnvironmentVariable("DB_HOST");
@@ -532,7 +574,8 @@ namespace LambdaCSharpWebAPI.Data
                             {
                                 Id = dbReader.GetString("id"),
                                 WalkName = dbReader.GetString("walkName"),
-                                UserID = dbReader.GetString("userID")
+                                UserID = dbReader.GetString("userID"),
+                                aveRating = dbReader.GetFloat("aveRating")
                             };
                             data.Add(obj);
                             break;

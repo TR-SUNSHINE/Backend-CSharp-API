@@ -17,7 +17,7 @@ namespace LambdaCSharpWebAPI.Controllers
             this.walkService = walkService;
         }
         [HttpPost]
-        public IActionResult AddWalk([FromBody]WalkModel walk)
+        public IActionResult AddWalk([FromBody] WalkModel walk)
         {
             try
             {
@@ -38,6 +38,26 @@ namespace LambdaCSharpWebAPI.Controllers
             {
                 Logger.LogDebug("Calling GetWalks", "GetWalk", "WalkController");
                 var result = walkService.GetWalks(walkId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        // Get All Walks by userID
+        [HttpGet("user/{userId}")]
+        public IActionResult GetWalksByUserId(string userId)
+        {
+            try
+            {
+                Logger.LogDebug("Calling GetWalksByUserId", "GetWalksByUserId", "WalkController");
+                var result = walkService.GetWalksByUserId(userId);
                 return Ok(result);
             }
             catch (ArgumentException ex)

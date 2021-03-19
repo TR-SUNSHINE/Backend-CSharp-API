@@ -5,6 +5,8 @@ namespace LambdaCSharpWebAPI.Data
 {
     public interface IDatabase
     {
+        //GetWalksByUserId
+        ArrayList GetWalksByUserId(string userId);
         ArrayList GetWalks(string walkId);
         void AddWalk(WalkModel walk);
         ArrayList GetTasks();
