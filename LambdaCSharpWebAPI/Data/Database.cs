@@ -1,4 +1,4 @@
-﻿//using Amazon.Lambda.Core;
+//using Amazon.Lambda.Core;
 using LambdaCSharpWebAPI.Logging;
 using LambdaCSharpWebAPI.Models;
 using MySql.Data.MySqlClient;
@@ -366,8 +366,7 @@ namespace LambdaCSharpWebAPI.Data
                 throw new Exception(ex.Message);
             }
         }
-
-        // Get Walks for a User using userID
+              // Get Walks for a User using userID
         public ArrayList GetWalksByUserId(string userId)
         {
             try
