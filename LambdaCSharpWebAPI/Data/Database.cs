@@ -409,6 +409,43 @@ namespace LambdaCSharpWebAPI.Data
                 return null;
             }
         }
+
+        public ArrayList GetWalkMonthlyRating(string walkId)
+        {
+            try
+            {
+                ArrayList dataWalk = null;
+                string queryStatementWalk = "SELECT " +
+                   "   id," +
+                   "   userID," +
+                   "   walkID, " +
+                   "   Month(ratingTime) as MonthR, " +
+                   "   IFNULL(AVG(rating.walkrating),0) as MonthAveRating " +
+                   "FROM " +
+                   "   rating " +
+                   "WHERE " +
+                    "  rating.walkID = @walkId " +
+                    "GROUP BY Month(ratingTime)";
+
+                MySqlParameter[] dbParamsWalk = {
+                new MySqlParameter("@walkId",walkId)
+            };
+
+
+
+                Logger.LogDebug("Performing DB operations", "GetWalkMonthlyRating", "Database");
+                this.OpenConnection();
+                dataWalk = this.GetData(queryStatementWalk, dbParamsWalk, Models.WalkMonthlyRatingModel);
+                this.CloseConnection();
+
+                return dataWalk;
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue getting walks from the DB", "GetWalkMonthlyRating", "Database", ex.Message);
+                return null;
+            }
+        }
         private void Initialize()
         {
             dbHost = System.Environment.GetEnvironmentVariable("DB_HOST");
@@ -593,7 +630,7 @@ namespace LambdaCSharpWebAPI.Data
                             obj = new WalkMonthlyRatingModel
                             {
                                 Id = dbReader.GetString("id"),
-                                WalkName = dbReader.GetString("walkName"),
+                                WalkID = dbReader.GetString("walkID"),
                                 UserID = dbReader.GetString("userID"),
                                 MonthR = dbReader.GetInt32("MonthR"),
                                 MonthAveRating = dbReader.GetFloat("MonthAveRating")

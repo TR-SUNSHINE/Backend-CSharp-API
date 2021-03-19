@@ -68,5 +68,24 @@ namespace LambdaCSharpWebAPI.Controllers
                 return StatusCode(500, ex);
             }
         }
+
+        [HttpGet("rating/{walkId}")]
+        public IActionResult GetWalkMonthlyRating(string walkId)
+        {
+            try
+            {
+                Logger.LogDebug("Calling GetWalkMonthlyRating", "GetWalkMonthlyRating", "WalkController");
+                var result = walkService.GetWalkMonthlyRating(walkId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
     }
 }
