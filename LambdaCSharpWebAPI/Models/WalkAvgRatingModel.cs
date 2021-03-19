@@ -2,11 +2,12 @@
 
 namespace LambdaCSharpWebAPI.Models
 {
-    public class WalkModel
+    public class WalkAvgRatingModel
     {
         public string Id { get; set; }
         public string WalkName { get; set; }
         public string UserID { get; set; }
+        public float AveRating { get; set; }
         public List<RouteModel> Routes { get; set; }
     }
 }
