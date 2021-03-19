@@ -32,6 +32,12 @@ namespace LambdaCSharpWebAPI
 
             Logger.LogLevel = Configuration.GetValue<string>("Logging:LogLevel:Default");
 
+            //Register CORS. For this project we will allow any origin for simplicity.
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+            });
+
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
@@ -47,6 +53,8 @@ namespace LambdaCSharpWebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(options => options.AllowAnyOrigin());
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
