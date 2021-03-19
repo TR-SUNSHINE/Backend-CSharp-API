@@ -338,7 +338,9 @@ namespace LambdaCSharpWebAPI.Data
                 "FROM " +
                 "    route  " +
                 "WHERE " +
-                 "   walkID = @walkId";
+                 "   walkID = @walkId " +
+                 "ORDER BY" +
+                 "  sequence";
                 MySqlParameter[] dbParamsRoute = {
                 new MySqlParameter("@walkId",walkId)
             };
