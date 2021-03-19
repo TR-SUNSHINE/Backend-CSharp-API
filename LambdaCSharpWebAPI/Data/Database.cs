@@ -26,6 +26,7 @@ namespace LambdaCSharpWebAPI.Data
             RatingModel,
             WalkModel,
             WalkAvgRatingModel,
+            WalkMonthlyRatingModel,
             RouteModel
         }
         public Database()
@@ -367,7 +368,6 @@ namespace LambdaCSharpWebAPI.Data
                 throw new Exception(ex.Message);
             }
         }
-        // Get Walks for a User using userID
         public ArrayList GetWalksByUserId(string userId)
         {
             try
@@ -586,6 +586,17 @@ namespace LambdaCSharpWebAPI.Data
                                 WalkName = dbReader.GetString("walkName"),
                                 UserID = dbReader.GetString("userID"),
                                 AveRating = dbReader.GetFloat("AveRating")
+                            };
+                            data.Add(obj);
+                            break;
+                        case Models.WalkMonthlyRatingModel:
+                            obj = new WalkMonthlyRatingModel
+                            {
+                                Id = dbReader.GetString("id"),
+                                WalkName = dbReader.GetString("walkName"),
+                                UserID = dbReader.GetString("userID"),
+                                MonthR = dbReader.GetInt32("MonthR"),
+                                MonthAveRating = dbReader.GetFloat("MonthAveRating")
                             };
                             data.Add(obj);
                             break;

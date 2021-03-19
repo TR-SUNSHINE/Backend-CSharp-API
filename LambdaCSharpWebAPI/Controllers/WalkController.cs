@@ -50,7 +50,6 @@ namespace LambdaCSharpWebAPI.Controllers
             }
         }
 
-        // Get All Walks by userID
         [HttpGet("user/{userId}")]
         public IActionResult GetWalksByUserId(string userId)
         {
