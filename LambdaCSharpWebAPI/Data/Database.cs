@@ -25,6 +25,7 @@ namespace LambdaCSharpWebAPI.Data
             TaskListModel,
             RatingModel,
             WalkModel,
+            WalkAvgRatingModel,
             RouteModel
         }
         public Database()
@@ -366,7 +367,7 @@ namespace LambdaCSharpWebAPI.Data
                 throw new Exception(ex.Message);
             }
         }
-              // Get Walks for a User using userID
+        // Get Walks for a User using userID
         public ArrayList GetWalksByUserId(string userId)
         {
             try
@@ -383,7 +384,7 @@ namespace LambdaCSharpWebAPI.Data
                    "WHERE " +
                     "  walk.id = rating.walkID " +
                     "GROUP BY walkID),0) " +
-                   "as aveRating " +
+                   "as AveRating " +
                    "FROM " +
                    "   walk " +
                    "WHERE " +
@@ -397,7 +398,7 @@ namespace LambdaCSharpWebAPI.Data
 
                 Logger.LogDebug("Performing DB operations", "GetWalksByUserId", "Database");
                 this.OpenConnection();
-                dataWalk = this.GetData(queryStatementWalk, dbParamsWalk, Models.WalkModel);
+                dataWalk = this.GetData(queryStatementWalk, dbParamsWalk, Models.WalkAvgRatingModel);
                 this.CloseConnection();
 
                 return dataWalk;
@@ -574,8 +575,17 @@ namespace LambdaCSharpWebAPI.Data
                             {
                                 Id = dbReader.GetString("id"),
                                 WalkName = dbReader.GetString("walkName"),
+                                UserID = dbReader.GetString("userID")
+                            };
+                            data.Add(obj);
+                            break;
+                        case Models.WalkAvgRatingModel:
+                            obj = new WalkAvgRatingModel
+                            {
+                                Id = dbReader.GetString("id"),
+                                WalkName = dbReader.GetString("walkName"),
                                 UserID = dbReader.GetString("userID"),
-                                aveRating = dbReader.GetFloat("aveRating")
+                                AveRating = dbReader.GetFloat("AveRating")
                             };
                             data.Add(obj);
                             break;
