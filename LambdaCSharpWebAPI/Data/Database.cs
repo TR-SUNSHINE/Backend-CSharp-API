@@ -556,6 +556,11 @@ namespace LambdaCSharpWebAPI.Data
 
             Logger.LogDebug("Inserting data", "InsertData", "Database");
             Logger.LogDebug("queryStatement = " + queryStatement, "InsertData", "Database");
+            Logger.LogDebug("Looping parameters", "GetData", "Database");
+            foreach (var param in dbParams)
+            {
+                Logger.LogDebug($"dbParam name = {param.ParameterName} | Value = {param.Value}", "GetData", "Database");
+            }
             command.ExecuteNonQuery();
         }
         private void UpdateData(string queryStatement, MySqlParameter[] dbParams)
@@ -565,6 +570,11 @@ namespace LambdaCSharpWebAPI.Data
 
             Logger.LogDebug("Updating data", "UpdateData", "Database");
             Logger.LogDebug("queryStatement = " + queryStatement, "UpdateData", "Database");
+            Logger.LogDebug("Looping parameters", "GetData", "Database");
+            foreach (var param in dbParams)
+            {
+                Logger.LogDebug($"dbParam name = {param.ParameterName} | Value = {param.Value}", "GetData", "Database");
+            }
             command.ExecuteNonQuery();
         }
         private void DeleteData(string queryStatement, MySqlParameter[] dbParams)
@@ -574,6 +584,11 @@ namespace LambdaCSharpWebAPI.Data
 
             Logger.LogDebug("Deleting data", "DeleteData", "Database");
             Logger.LogDebug("queryStatement = " + queryStatement, "DeleteData", "Database");
+            Logger.LogDebug("Looping parameters", "GetData", "Database");
+            foreach (var param in dbParams)
+            {
+                Logger.LogDebug($"dbParam name = {param.ParameterName} | Value = {param.Value}", "GetData", "Database");
+            }
             command.ExecuteNonQuery();
         }
         private ArrayList GetData(string queryStatement, MySqlParameter[] dbParams, Models objectModelType)
@@ -587,6 +602,12 @@ namespace LambdaCSharpWebAPI.Data
 
             Logger.LogDebug("Getting data", "GetData", "Database");
             Logger.LogDebug("queryStatement = " + queryStatement, "GetData", "Database");
+            Logger.LogDebug("Looping parameters", "GetData", "Database");
+            foreach (var param in dbParams)
+            {
+                Logger.LogDebug($"dbParam name = {param.ParameterName} | Value = {param.Value}", "GetData", "Database");
+            }
+
             dbReader = command.ExecuteReader();
 
             if (dbReader.HasRows)
