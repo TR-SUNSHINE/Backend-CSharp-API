@@ -418,16 +418,13 @@ namespace LambdaCSharpWebAPI.Data
             {
                 ArrayList dataWalk = null;
                 string queryStatementWalk = "SELECT " +
-                   "   id," +
-                   "   userID," +
-                   "   walkID, " +
-                   "   Month(ratingTime) as MonthR, " +
+                   "   DATE_FORMAT(ratingTime,'%b') as MonthR, " +
                    "   IFNULL(AVG(rating.walkrating),0) as MonthAveRating " +
                    "FROM " +
                    "   rating " +
                    "WHERE " +
                     "  rating.walkID = @walkId " +
-                    "GROUP BY Month(ratingTime)";
+                    "GROUP BY MONTH(ratingTime)";
 
                 MySqlParameter[] dbParamsWalk = {
                 new MySqlParameter("@walkId",walkId)
@@ -631,9 +628,6 @@ namespace LambdaCSharpWebAPI.Data
                         case Models.WalkMonthlyRatingModel:
                             obj = new WalkMonthlyRatingModel
                             {
-                                Id = dbReader.GetString("id"),
-                                WalkID = dbReader.GetString("walkID"),
-                                UserID = dbReader.GetString("userID"),
                                 MonthR = dbReader.GetInt32("MonthR"),
                                 MonthAveRating = dbReader.GetFloat("MonthAveRating")
                             };
