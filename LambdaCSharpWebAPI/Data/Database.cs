@@ -26,6 +26,7 @@ namespace LambdaCSharpWebAPI.Data
             RatingModel,
             WalkModel,
             WalkAvgRatingModel,
+            WalkMonthlyRatingModel,
             RouteModel
         }
         public Database()
@@ -369,7 +370,6 @@ namespace LambdaCSharpWebAPI.Data
                 throw new Exception(ex.Message);
             }
         }
-        // Get Walks for a User using userID
         public ArrayList GetWalksByUserId(string userId)
         {
             try
@@ -408,6 +408,43 @@ namespace LambdaCSharpWebAPI.Data
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue getting walks from the DB", "GetWalksByUserId", "Database", ex.Message);
+                return null;
+            }
+        }
+
+        public ArrayList GetWalkMonthlyRating(string walkId)
+        {
+            try
+            {
+                ArrayList dataWalk = null;
+                string queryStatementWalk = "SELECT " +
+                   "   id," +
+                   "   userID," +
+                   "   walkID, " +
+                   "   Month(ratingTime) as MonthR, " +
+                   "   IFNULL(AVG(rating.walkrating),0) as MonthAveRating " +
+                   "FROM " +
+                   "   rating " +
+                   "WHERE " +
+                    "  rating.walkID = @walkId " +
+                    "GROUP BY Month(ratingTime)";
+
+                MySqlParameter[] dbParamsWalk = {
+                new MySqlParameter("@walkId",walkId)
+            };
+
+
+
+                Logger.LogDebug("Performing DB operations", "GetWalkMonthlyRating", "Database");
+                this.OpenConnection();
+                dataWalk = this.GetData(queryStatementWalk, dbParamsWalk, Models.WalkMonthlyRatingModel);
+                this.CloseConnection();
+
+                return dataWalk;
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue getting walks from the DB", "GetWalkMonthlyRating", "Database", ex.Message);
                 return null;
             }
         }
@@ -588,6 +625,17 @@ namespace LambdaCSharpWebAPI.Data
                                 WalkName = dbReader.GetString("walkName"),
                                 UserID = dbReader.GetString("userID"),
                                 AveRating = dbReader.GetFloat("AveRating")
+                            };
+                            data.Add(obj);
+                            break;
+                        case Models.WalkMonthlyRatingModel:
+                            obj = new WalkMonthlyRatingModel
+                            {
+                                Id = dbReader.GetString("id"),
+                                WalkID = dbReader.GetString("walkID"),
+                                UserID = dbReader.GetString("userID"),
+                                MonthR = dbReader.GetInt32("MonthR"),
+                                MonthAveRating = dbReader.GetFloat("MonthAveRating")
                             };
                             data.Add(obj);
                             break;

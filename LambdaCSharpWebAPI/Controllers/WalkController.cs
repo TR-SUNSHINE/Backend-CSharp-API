@@ -50,7 +50,6 @@ namespace LambdaCSharpWebAPI.Controllers
             }
         }
 
-        // Get All Walks by userID
         [HttpGet("user/{userId}")]
         public IActionResult GetWalksByUserId(string userId)
         {
@@ -58,6 +57,25 @@ namespace LambdaCSharpWebAPI.Controllers
             {
                 Logger.LogDebug("Calling GetWalksByUserId", "GetWalksByUserId", "WalkController");
                 var result = walkService.GetWalksByUserId(userId);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [HttpGet("rating/{walkId}")]
+        public IActionResult GetWalkMonthlyRating(string walkId)
+        {
+            try
+            {
+                Logger.LogDebug("Calling GetWalkMonthlyRating", "GetWalkMonthlyRating", "WalkController");
+                var result = walkService.GetWalkMonthlyRating(walkId);
                 return Ok(result);
             }
             catch (ArgumentException ex)

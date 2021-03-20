@@ -26,11 +26,16 @@ namespace LambdaCSharpWebAPI.Services
             return database.GetWalks(walkId);
         }
 
-        // GetAllWalksByUserId
         public ArrayList GetWalksByUserId(string userId)
         {
             Logger.LogDebug("Calling GetWalksByUserId", "GetWalksByUserId", "WalkService");
             return database.GetWalksByUserId(userId);
+        }
+
+        public ArrayList GetWalkMonthlyRating(string walkId)
+        {
+            Logger.LogDebug("Calling GetWalkMonthlyRating", "GetWalkMonthlyRating", "WalkService");
+            return database.GetWalkMonthlyRating(walkId);
         }
 
     }

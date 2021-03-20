@@ -8,6 +8,5 @@ namespace LambdaCSharpWebAPI.Models
         public string WalkName { get; set; }
         public string UserID { get; set; }
         public float AveRating { get; set; }
-        public List<RouteModel> Routes { get; set; }
     }
 }
