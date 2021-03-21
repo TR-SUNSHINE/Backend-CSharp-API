@@ -417,20 +417,51 @@ namespace LambdaCSharpWebAPI.Data
             try
             {
                 ArrayList dataWalk = null;
-                string queryStatementWalk = "SELECT " +
-                   "   DATE_FORMAT(ratingTime,'%b') as MonthR, " +
-                   "   IFNULL(AVG(rating.walkrating),0) as MonthAveRating " +
+                string queryStatementWalk = "SELECT 'Jan' as 'MonthR', " +
+                "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '1') " +
+                "as 'MonthAveRating' " +
+                "UNION SELECT 'Feb' as 'MonthR', " +
+                "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '2') " +
+                "as 'MonthAveRating' " +
+                "UNION SELECT 'Mar' as 'MonthR', " +
+                "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '3') " +
+                "as 'MonthAveRating' " +
+                "UNION SELECT 'Apr' as 'MonthR', " +
+                "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '4') " +
+                "as 'MonthAveRating' " +
+                "UNION SELECT 'May' as 'MonthR', " +
+                "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '5') " +
+                "as 'MonthAveRating' " +
+                "UNION SELECT 'Jun' as 'MonthR', " +
+                "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '6') " +
+                "as 'MonthAveRating' " +
+                "UNION SELECT 'Jul' as 'MonthR', " +
+                "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '7') " +
+                "as 'MonthAveRating' " +
+                "UNION SELECT 'Aug' as 'MonthR', " +
+                "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '8') " +
+                "as 'MonthAveRating' " +
+                "UNION SELECT 'Sep' as 'MonthR', " +
+                "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '9') " +
+                "as 'MonthAveRating' " +
+                "UNION SELECT 'Oct' as 'MonthR', " +
+                "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '10') " +
+                "as 'MonthAveRating' " +
+                "UNION SELECT 'Nov' as 'MonthR', " +
+                "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '11') " +
+                "as 'MonthAveRating' " +
+                "UNION SELECT 'Dec' as 'MonthR', " +
+                "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '12') " +
+                "as 'MonthAveRating' " +
+
                    "FROM " +
                    "   rating " +
                    "WHERE " +
-                    "  rating.walkID = @walkId " +
-                    "GROUP BY MONTH(ratingTime)";
+                    "  rating.walkID = @walkId ";
 
                 MySqlParameter[] dbParamsWalk = {
                 new MySqlParameter("@walkId",walkId)
             };
-
-
 
                 Logger.LogDebug("Performing DB operations", "GetWalkMonthlyRating", "Database");
                 this.OpenConnection();
@@ -649,7 +680,7 @@ namespace LambdaCSharpWebAPI.Data
                         case Models.WalkMonthlyRatingModel:
                             obj = new WalkMonthlyRatingModel
                             {
-                                MonthR = dbReader.GetInt32("MonthR"),
+                                MonthR = dbReader.GetString("MonthR"),
                                 MonthAveRating = dbReader.GetFloat("MonthAveRating")
                             };
                             data.Add(obj);
