@@ -583,42 +583,51 @@ namespace LambdaCSharpWebAPI.Data
         private void InsertData(string queryStatement, MySqlParameter[] dbParams)
         {
             MySqlCommand command = new MySqlCommand(queryStatement, connection);
-            if (dbParams != null) command.Parameters.AddRange(dbParams);
-
-            Logger.LogDebug("Inserting data", "InsertData", "Database");
-            Logger.LogDebug("queryStatement = " + queryStatement, "InsertData", "Database");
-            Logger.LogDebug("Looping parameters", "GetData", "Database");
-            foreach (var param in dbParams)
+            if (dbParams != null)
             {
-                Logger.LogDebug($"dbParam name = {param.ParameterName} | Value = {param.Value}", "GetData", "Database");
+                command.Parameters.AddRange(dbParams);
+
+                Logger.LogDebug("Inserting data", "InsertData", "Database");
+                Logger.LogDebug("queryStatement = " + queryStatement, "InsertData", "Database");
+                Logger.LogDebug("Looping parameters", "GetData", "Database");
+                foreach (var param in dbParams)
+                {
+                    Logger.LogDebug($"dbParam name = {param.ParameterName} | Value = {param.Value}", "GetData", "Database");
+                }
             }
             command.ExecuteNonQuery();
         }
         private void UpdateData(string queryStatement, MySqlParameter[] dbParams)
         {
             MySqlCommand command = new MySqlCommand(queryStatement, connection);
-            if (dbParams != null) command.Parameters.AddRange(dbParams);
-
-            Logger.LogDebug("Updating data", "UpdateData", "Database");
-            Logger.LogDebug("queryStatement = " + queryStatement, "UpdateData", "Database");
-            Logger.LogDebug("Looping parameters", "GetData", "Database");
-            foreach (var param in dbParams)
+            if (dbParams != null)
             {
-                Logger.LogDebug($"dbParam name = {param.ParameterName} | Value = {param.Value}", "GetData", "Database");
+                command.Parameters.AddRange(dbParams);
+
+                Logger.LogDebug("Updating data", "UpdateData", "Database");
+                Logger.LogDebug("queryStatement = " + queryStatement, "UpdateData", "Database");
+                Logger.LogDebug("Looping parameters", "GetData", "Database");
+                foreach (var param in dbParams)
+                {
+                    Logger.LogDebug($"dbParam name = {param.ParameterName} | Value = {param.Value}", "GetData", "Database");
+                }
             }
             command.ExecuteNonQuery();
         }
         private void DeleteData(string queryStatement, MySqlParameter[] dbParams)
         {
             MySqlCommand command = new MySqlCommand(queryStatement, connection);
-            if (dbParams != null) command.Parameters.AddRange(dbParams);
-
-            Logger.LogDebug("Deleting data", "DeleteData", "Database");
-            Logger.LogDebug("queryStatement = " + queryStatement, "DeleteData", "Database");
-            Logger.LogDebug("Looping parameters", "GetData", "Database");
-            foreach (var param in dbParams)
+            if (dbParams != null)
             {
-                Logger.LogDebug($"dbParam name = {param.ParameterName} | Value = {param.Value}", "GetData", "Database");
+                command.Parameters.AddRange(dbParams);
+
+                Logger.LogDebug("Deleting data", "DeleteData", "Database");
+                Logger.LogDebug("queryStatement = " + queryStatement, "DeleteData", "Database");
+                Logger.LogDebug("Looping parameters", "GetData", "Database");
+                foreach (var param in dbParams)
+                {
+                    Logger.LogDebug($"dbParam name = {param.ParameterName} | Value = {param.Value}", "GetData", "Database");
+                }
             }
             command.ExecuteNonQuery();
         }
@@ -629,16 +638,18 @@ namespace LambdaCSharpWebAPI.Data
 
             MySqlCommand command = new MySqlCommand(queryStatement, connection);
             command.CommandText = queryStatement;
-            if (dbParams != null) command.Parameters.AddRange(dbParams);
-
-            Logger.LogDebug("Getting data", "GetData", "Database");
-            Logger.LogDebug("queryStatement = " + queryStatement, "GetData", "Database");
-            Logger.LogDebug("Looping parameters", "GetData", "Database");
-            foreach (var param in dbParams)
+            if (dbParams != null)
             {
-                Logger.LogDebug($"dbParam name = {param.ParameterName} | Value = {param.Value}", "GetData", "Database");
-            }
+                command.Parameters.AddRange(dbParams);
 
+                Logger.LogDebug("Getting data", "GetData", "Database");
+                Logger.LogDebug("queryStatement = " + queryStatement, "GetData", "Database");
+                Logger.LogDebug("Looping parameters", "GetData", "Database");
+                foreach (var param in dbParams)
+                {
+                    Logger.LogDebug($"dbParam name = {param.ParameterName} | Value = {param.Value}", "GetData", "Database");
+                }
+            }
             dbReader = command.ExecuteReader();
 
             if (dbReader.HasRows)
