@@ -24,7 +24,6 @@ namespace LambdaCSharpWebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSingleton<ITaskListService, TaskListService>();
             services.AddSingleton<IRatingService, RatingService>();
             services.AddSingleton<IWalkService, WalkService>();
 

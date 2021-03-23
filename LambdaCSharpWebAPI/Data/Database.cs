@@ -22,7 +22,6 @@ namespace LambdaCSharpWebAPI.Data
         private string connectionString;
         private enum Models
         {
-            TaskListModel,
             RatingModel,
             WalkModel,
             WalkAvgRatingModel,
@@ -145,169 +144,6 @@ namespace LambdaCSharpWebAPI.Data
                 throw new Exception(ex.Message);
             }
         }
-        public void AddTask(TaskListModel task)
-        {
-            try
-            {
-                string queryStatement =
-                "INSERT INTO " +
-                "   task " +
-                "(" +
-                "   taskId," +
-                "   userId," +
-                "   description," +
-                "   completed" +
-                ")" +
-                "VALUES " +
-                "(" +
-                "   UUID(), " +
-                "   @userId, " +
-                "   @description, " +
-                "   @completed" +
-                ")";
-                MySqlParameter[] dbParams = {
-                new MySqlParameter("@userId",task.UserId),
-                new MySqlParameter("@description",task.Description),
-                new MySqlParameter("@completed",task.Completed)
-             };
-                Logger.LogDebug("Performing DB operations", "AddTask", "Database");
-                this.OpenConnection();
-                this.BeginTransaction();
-                this.InsertData(queryStatement, dbParams);
-                this.CommitTransaction();
-                this.CloseConnection();
-            }
-            catch (MySqlException ex)
-            {
-                Logger.LogError("Issue adding task to the DB", "AddTask", "Database", ex.Message);
-
-                this.RollbackTransaction();
-                this.CloseConnection();
-                throw new Exception(ex.Message);
-            }
-
-        }
-        public void UpdateTask(TaskListModel task)
-        {
-            try
-            {
-                string queryStatement = "" +
-                "UPDATE " +
-                "   task " +
-                "SET " +
-                "   userId = @userId, " +
-                "   description = @description, " +
-                "   completed = @completed " +
-                "WHERE " +
-                "   taskId = @taskId";
-                MySqlParameter[] dbParams = {
-                new MySqlParameter("@taskId",task.TaskId),
-                new MySqlParameter("@userId",task.UserId),
-                new MySqlParameter("@description",task.Description),
-                new MySqlParameter("@completed",task.Completed)
-             };
-                Logger.LogDebug("Performing DB operations", "UpdateTask", "Database");
-                this.OpenConnection();
-                this.BeginTransaction();
-                this.UpdateData(queryStatement, dbParams);
-                this.CommitTransaction();
-                this.CloseConnection();
-            }
-            catch (MySqlException ex)
-            {
-                Logger.LogError("Issue updating task to the DB", "UpdateTask", "Database", ex.Message);
-
-                this.RollbackTransaction();
-                this.CloseConnection();
-                throw new Exception(ex.Message);
-            }
-        }
-        public void DeleteTask(string taskId)
-        {
-            try
-            {
-                string queryStatement = "" +
-                "DELETE FROM " +
-                "   task " +
-                "WHERE " +
-                "   taskId = @taskId";
-                MySqlParameter[] dbParams = {
-                new MySqlParameter("@taskId",taskId)
-             };
-                Logger.LogDebug("Performing DB operations", "DeleteTask", "Database");
-                this.OpenConnection();
-                this.BeginTransaction();
-                this.DeleteData(queryStatement, dbParams);
-                this.CommitTransaction();
-                this.CloseConnection();
-            }
-            catch (MySqlException ex)
-            {
-                Logger.LogError("Issue deleting task to the DB", "DeleteTask", "Database", ex.Message);
-
-                this.RollbackTransaction();
-                this.CloseConnection();
-                throw new Exception(ex.Message);
-            }
-        }
-        public ArrayList GetTasks()
-        {
-            try
-            {
-                ArrayList data = null;
-
-                string queryStatement = "" +
-                    "SELECT " +
-                    "   * " +
-                    "FROM " +
-                    "   task";
-
-                Logger.LogDebug("Performing DB operations", "GetTasks", "Database");
-                this.OpenConnection();
-                data = this.GetData(queryStatement, null, Models.TaskListModel);
-                this.CloseConnection();
-
-                return data;
-            }
-            catch (MySqlException ex)
-            {
-                Logger.LogError("Issue getting tasks from the DB", "GetTasks", "Database", ex.Message);
-                this.CloseConnection();
-                throw new Exception(ex.Message);
-            }
-
-        }
-        public ArrayList GetTasks(string taskId)
-        {
-            try
-            {
-                ArrayList data = null;
-
-                string queryStatement = "" +
-                    "SELECT " +
-                    "   * " +
-                    "FROM " +
-                    "   task " +
-                    "WHERE " +
-                    "   taskId = @taskId";
-                MySqlParameter[] dbParams = {
-                new MySqlParameter("@taskId",taskId)
-                };
-
-                Logger.LogDebug("Performing DB operations", "GetTasks", "Database");
-                this.OpenConnection();
-                data = this.GetData(queryStatement, dbParams, Models.TaskListModel);
-                this.CloseConnection();
-
-                return data;
-            }
-            catch (MySqlException ex)
-            {
-                Logger.LogError("Issue getting tasks from the DB", "GetTasks", "Database", ex.Message);
-                this.CloseConnection();
-                throw new Exception(ex.Message);
-            }
-        }
         public ArrayList GetWalks(string walkId)
         {
             try
@@ -395,9 +231,6 @@ namespace LambdaCSharpWebAPI.Data
                 MySqlParameter[] dbParamsWalk = {
                 new MySqlParameter("@userId",userId)
             };
-
-
-
                 Logger.LogDebug("Performing DB operations", "GetWalksByUserId", "Database");
                 this.OpenConnection();
                 dataWalk = this.GetData(queryStatementWalk, dbParamsWalk, Models.WalkAvgRatingModel);
@@ -658,17 +491,6 @@ namespace LambdaCSharpWebAPI.Data
                 {
                     switch (objectModelType)
                     {
-                        case Models.TaskListModel:
-                            obj = new TaskListModel
-                            {
-                                TaskId = dbReader.GetString("taskId"),
-                                UserId = dbReader.GetString("userId"),
-                                Description = dbReader.GetString("description"),
-                                Completed = dbReader.GetBoolean("completed")
-                            };
-                            data.Add(obj);
-                            break;
-
                         case Models.WalkModel:
                             obj = new WalkModel
                             {
@@ -707,19 +529,6 @@ namespace LambdaCSharpWebAPI.Data
                             };
                             data.Add(obj);
                             break;
-
-                            /*
-                            case Models.RatingModel:
-                                obj = new RatingModel
-                                {
-                                    UserId = dbReader.GetString("userID"),
-                                    WalkId = dbReader.GetString("walkID"),
-                                    WalkRating = dbReader.GetInt32("walkRating"),
-                                    WalkTime = dbReader.GetDateTime("WalkTime")
-                                };
-                                data.Add(obj);
-                                break;
-                                */
                     }
                 }
             }

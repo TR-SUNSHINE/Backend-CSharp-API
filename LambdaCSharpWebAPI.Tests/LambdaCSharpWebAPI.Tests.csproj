@@ -22,7 +22,6 @@
     </Content>
     <Content Include="TestRequests\Swagger-Get.json" />
     <Content Include="TestRequests\swagger.json" />
-    <Content Include="TestRequests\TaskListController-Get.json" />
     <Content Include="TestRequests\WalkController-Get.json" />
     <Content Include="TestRequests\WalkController-GetSingleWalk.json" />
     <Content Include="TestRequests\WalkController-GetWalk.json" />
