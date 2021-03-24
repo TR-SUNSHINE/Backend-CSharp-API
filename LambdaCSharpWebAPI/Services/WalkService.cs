@@ -25,6 +25,11 @@ namespace LambdaCSharpWebAPI.Services
             Logger.LogDebug("Calling DeleteWalk.", "DeleteWalk", "WalkService");
             database.DeleteWalk(walkId);
         }
+        public void UpdateWalk(WalkModel walk)
+        {
+            Logger.LogDebug("Calling UpdateWalk.", "UpdateWalk", "WalkService");
+            database.UpdateWalk(walk);
+        }
         public ArrayList GetWalks(string walkId)
         {
             Logger.LogDebug("Calling GetWalks", "GetWalks", "WalkService");

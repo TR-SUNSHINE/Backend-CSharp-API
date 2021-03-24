@@ -79,6 +79,37 @@ namespace LambdaCSharpWebAPI.Data
                 throw new Exception(ex.Message);
             }
         }
+        public void UpdateWalk(WalkModel walk)
+        {
+            try
+            {
+                string queryStatementWalk =
+                   "UPDATE " +
+                    "   walk " +
+                    "SET " +
+                    "   walkName = @walkName " +
+                    "WHERE " +
+                    "   id = @walkId";
+                MySqlParameter[] dbParamsWalk = {
+                    new MySqlParameter("@walkId",walk.Id),
+                     new MySqlParameter("@walkName",walk.WalkName)
+                };
+                Logger.LogDebug("Performing DB operations", "UpdateWalk", "Database");
+                this.OpenConnection();
+                this.BeginTransaction();
+                this.UpdateData(queryStatementWalk, dbParamsWalk);
+                this.CommitTransaction();
+                this.CloseConnection();
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue updating walk from the DB", "UpdateWalk", "Database", ex.Message);
+
+                this.RollbackTransaction();
+                this.CloseConnection();
+                throw new Exception(ex.Message);
+            }
+        }
         public void AddWalk(WalkModel walk)
         {
             try
