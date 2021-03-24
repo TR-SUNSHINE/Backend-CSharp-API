@@ -64,9 +64,9 @@ namespace LambdaCSharpWebAPI.Data
                 Logger.LogDebug("Performing DB operations", "DeleteWalk", "Database");
                 this.OpenConnection();
                 this.BeginTransaction();
-                this.InsertData(queryStatementRating, dbParamsRating);
-                this.InsertData(queryStatementRoute, dbParamsRoute);
-                this.InsertData(queryStatementWalk, dbParamsWalk);
+                this.DeleteData(queryStatementRating, dbParamsRating);
+                this.DeleteData(queryStatementRoute, dbParamsRoute);
+                this.DeleteData(queryStatementWalk, dbParamsWalk);
                 this.CommitTransaction();
                 this.CloseConnection();
             }
