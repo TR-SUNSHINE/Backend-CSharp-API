@@ -288,6 +288,9 @@ namespace LambdaCSharpWebAPI.Data
                 "UNION SELECT 'Dec' as 'MonthR', " +
                 "(SELECT IFNULL(AVG(rating.walkrating),0) FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '12') " +
                 "as 'MonthAveRating' " +
+                 "UNION SELECT 'Dummy' as 'MonthR', " +
+                "(SELECT 0 FROM rating where rating.walkID = @walkId AND MONTH(ratingtime) = '12') " +
+                "as 'MonthAveRating' " +
 
                    "FROM " +
                    "   rating " +
