@@ -44,13 +44,15 @@ namespace LambdaCSharpWebAPI.Data
                     "(" +
                     "   id," +
                     "   walkName," +
-                    "   userID" +
+                    "   userID," +
+                    "   walkTime" +
                     ") " +
                     "VALUES " +
                     "(" +
                     "   @id, " +
                     "   @walkName, " +
-                    "   @userID" +
+                    "   @userID," +
+                    "   Now()" +
                     ")";
                 MySqlParameter[] dbParamsWalk = {
                     new MySqlParameter("@id",guid),
