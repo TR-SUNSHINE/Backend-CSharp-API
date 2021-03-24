@@ -8,6 +8,7 @@ namespace LambdaCSharpWebAPI.Data
         ArrayList GetWalkMonthlyRating(string walkId);
         ArrayList GetWalksByUserId(string userId);
         ArrayList GetWalks(string walkId);
+        void DeleteWalk(string waslkId);
         void AddWalk(WalkModel walk);
         void AddRating(RatingModel rating);
     }

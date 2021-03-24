@@ -33,6 +33,52 @@ namespace LambdaCSharpWebAPI.Data
             Logger.LogDebug("Calling Initialize", "Database", "Database");
             Initialize();
         }
+        public void DeleteWalk(string walkId)
+        {
+            try
+            {
+                string queryStatementRating =
+                    "DELETE FROM " +
+                    "   rating " +
+                    "WHERE " +
+                    "   walkId = @walkId";
+                MySqlParameter[] dbParamsRating = {
+                    new MySqlParameter("@walkId",walkId)
+                };
+                string queryStatementRoute =
+                    "DELETE FROM " +
+                    "   route " +
+                    "WHERE " +
+                    "   walkId = @walkId";
+                MySqlParameter[] dbParamsRoute = {
+                    new MySqlParameter("@walkId",walkId)
+                };
+                string queryStatementWalk =
+                    "DELETE FROM " +
+                    "   walk " +
+                    "WHERE " +
+                    "   id = @walkId";
+                MySqlParameter[] dbParamsWalk = {
+                    new MySqlParameter("@walkId",walkId)
+                };
+                Logger.LogDebug("Performing DB operations", "DeleteWalk", "Database");
+                this.OpenConnection();
+                this.BeginTransaction();
+                this.InsertData(queryStatementRating, dbParamsRating);
+                this.InsertData(queryStatementRoute, dbParamsRoute);
+                this.InsertData(queryStatementWalk, dbParamsWalk);
+                this.CommitTransaction();
+                this.CloseConnection();
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue deleting walk from the DB", "DeleteWalk", "Database", ex.Message);
+
+                this.RollbackTransaction();
+                this.CloseConnection();
+                throw new Exception(ex.Message);
+            }
+        }
         public void AddWalk(WalkModel walk)
         {
             try
