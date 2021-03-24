@@ -94,9 +94,9 @@ namespace LambdaCSharpWebAPI.Tests
 
             //act
             walkService = new WalkService(databaseMock.Object);
-            walkService.AddWalk(walk.Id);
+            walkService.DeleteWalk(walk.Id);
             //assert
-            databaseMock.Verify(x => x.AddWalk(walk.Id));
+            databaseMock.Verify(x => x.DeleteWalk(walk.Id));
         }
     }
 }
