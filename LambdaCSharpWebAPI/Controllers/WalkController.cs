@@ -36,8 +36,22 @@ namespace LambdaCSharpWebAPI.Controllers
         {
             try
             {
-                Logger.LogDebug("Calling DeleteWalk", "DeleteWalk", "TaskListController");
+                Logger.LogDebug("Calling DeleteWalk", "DeleteWalk", "WalkController");
                 walkService.DeleteWalk(walk.Id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+        [HttpPut]
+        public IActionResult UpdateWalk([FromBody]WalkModel walk)
+        {
+            try
+            {
+                Logger.LogDebug("Calling UpdateWalk", "UpdateWalk", "WalkController");
+                walkService.UpdateWalk(walk);
                 return Ok();
             }
             catch (Exception ex)

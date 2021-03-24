@@ -64,15 +64,46 @@ namespace LambdaCSharpWebAPI.Data
                 Logger.LogDebug("Performing DB operations", "DeleteWalk", "Database");
                 this.OpenConnection();
                 this.BeginTransaction();
-                this.InsertData(queryStatementRating, dbParamsRating);
-                this.InsertData(queryStatementRoute, dbParamsRoute);
-                this.InsertData(queryStatementWalk, dbParamsWalk);
+                this.DeleteData(queryStatementRating, dbParamsRating);
+                this.DeleteData(queryStatementRoute, dbParamsRoute);
+                this.DeleteData(queryStatementWalk, dbParamsWalk);
                 this.CommitTransaction();
                 this.CloseConnection();
             }
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue deleting walk from the DB", "DeleteWalk", "Database", ex.Message);
+
+                this.RollbackTransaction();
+                this.CloseConnection();
+                throw new Exception(ex.Message);
+            }
+        }
+        public void UpdateWalk(WalkModel walk)
+        {
+            try
+            {
+                string queryStatementWalk =
+                   "UPDATE " +
+                    "   walk " +
+                    "SET " +
+                    "   walkName = @walkName " +
+                    "WHERE " +
+                    "   id = @walkId";
+                MySqlParameter[] dbParamsWalk = {
+                    new MySqlParameter("@walkId",walk.Id),
+                     new MySqlParameter("@walkName",walk.WalkName)
+                };
+                Logger.LogDebug("Performing DB operations", "UpdateWalk", "Database");
+                this.OpenConnection();
+                this.BeginTransaction();
+                this.UpdateData(queryStatementWalk, dbParamsWalk);
+                this.CommitTransaction();
+                this.CloseConnection();
+            }
+            catch (MySqlException ex)
+            {
+                Logger.LogError("Issue updating walk from the DB", "UpdateWalk", "Database", ex.Message);
 
                 this.RollbackTransaction();
                 this.CloseConnection();
