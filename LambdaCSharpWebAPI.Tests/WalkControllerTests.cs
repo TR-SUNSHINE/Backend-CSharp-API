@@ -73,5 +73,30 @@ namespace LambdaCSharpWebAPI.Tests
             //assert
             databaseMock.Verify(x => x.AddWalk(walk));
         }
+
+        [Fact]
+        public void TestDeleteWalk()
+        {
+            databaseMock = new Mock<IDatabase>()
+            {
+                DefaultValue = DefaultValue.Mock
+            };
+
+            //arrange
+            WalkModel walk;
+            walk = new WalkModel
+            {
+                Id = "abc1234",
+                Routes = null,
+                UserID = "def1234",
+                WalkName = "TestWalk"
+            };
+
+            //act
+            walkService = new WalkService(databaseMock.Object);
+            walkService.DeleteWalk(walk.Id);
+            //assert
+            databaseMock.Verify(x => x.DeleteWalk(walk.Id));
+        }
     }
 }

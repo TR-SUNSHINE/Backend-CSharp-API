@@ -31,6 +31,20 @@ namespace LambdaCSharpWebAPI.Controllers
                 return StatusCode(500, ex);
             }
         }
+        [HttpDelete]
+        public IActionResult DeleteWalk([FromBody]WalkModel walk)
+        {
+            try
+            {
+                Logger.LogDebug("Calling DeleteWalk", "DeleteWalk", "TaskListController");
+                walkService.DeleteWalk(walk.Id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
         [HttpGet("{walkId}")]
         public IActionResult GetWalk(string walkId)
         {
