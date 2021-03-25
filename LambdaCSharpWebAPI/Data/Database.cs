@@ -293,6 +293,10 @@ namespace LambdaCSharpWebAPI.Data
                 string queryStatementWalk = "SELECT " +
                    "   id," +
                    "   walkName," +
+                   "   walktime," +
+                   "   YEAR(walktime) as YearOf," +
+                   "   MONTH(walktime) as MonthOf," +
+                   "   DAY(walktime) as DayOf," +
                    "   userID, " +
                    "IFNULL((SELECT " +
                    "   AVG(rating.walkrating) " +
@@ -590,6 +594,10 @@ namespace LambdaCSharpWebAPI.Data
                             {
                                 Id = dbReader.GetString("id"),
                                 WalkName = dbReader.GetString("walkName"),
+                                Walktime = dbReader.GetString("walktime"),
+                                YearOf = dbReader.GetString("YearOf"),
+                                MonthOf = dbReader.GetString("MonthOf"),
+                                DayOf = dbReader.GetString("DayOf"),
                                 UserID = dbReader.GetString("userID"),
                                 AveRating = dbReader.GetFloat("AveRating")
                             };
