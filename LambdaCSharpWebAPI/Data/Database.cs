@@ -305,7 +305,8 @@ namespace LambdaCSharpWebAPI.Data
                    "FROM " +
                    "   walk " +
                    "WHERE " +
-                    "  walk.userID = @userId";
+                    "  walk.userID = @userId" +
+                    " ORDER BY walk.walktime DESC";
 
                 MySqlParameter[] dbParamsWalk = {
                 new MySqlParameter("@userId",userId)
