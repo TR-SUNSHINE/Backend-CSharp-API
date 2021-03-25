@@ -320,7 +320,8 @@ namespace LambdaCSharpWebAPI.Data
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue getting walks from the DB", "GetWalksByUserId", "Database", ex.Message);
-                return null;
+                this.CloseConnection();
+                throw new Exception(ex.Message);
             }
         }
 
@@ -388,7 +389,8 @@ namespace LambdaCSharpWebAPI.Data
             catch (MySqlException ex)
             {
                 Logger.LogError("Issue getting walks from the DB", "GetWalkMonthlyRating", "Database", ex.Message);
-                return null;
+                this.CloseConnection();
+                throw new Exception(ex.Message);
             }
         }
         private void Initialize()
