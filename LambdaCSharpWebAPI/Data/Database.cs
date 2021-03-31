@@ -161,7 +161,7 @@ namespace LambdaCSharpWebAPI.Data
                         "   @walkID" +
                         ")";
                     MySqlParameter[] dbParamsRoute = {
-                        new MySqlParameter("@sequence",route.Sequence),
+                        new MySqlParameter("@sequence",route.Key),
                         new MySqlParameter("@lat",route.Lat),
                         new MySqlParameter("@lng",route.Lng),
                         new MySqlParameter("@walkID",guid)
@@ -615,7 +615,7 @@ namespace LambdaCSharpWebAPI.Data
                             obj = new RouteModel
                             {
                                 Id = dbReader.GetString("id"),
-                                Sequence = dbReader.GetInt32("sequence"),
+                                Key = dbReader.GetInt32("sequence"),
                                 Lat = dbReader.GetDouble("lat"),
                                 Lng = dbReader.GetDouble("lng"),
                                 WalkId = dbReader.GetString("walkID")
