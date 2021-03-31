@@ -122,5 +122,71 @@ namespace LambdaCSharpWebAPI.Tests
             //assert
             databaseMock.Verify(x => x.UpdateWalk(walk));
         }
+        [Fact]
+        public void TestGetAllWalksReturnsValues()
+        {
+            ArrayList arr = new ArrayList();
+            arr.Add("TestVal1");
+            arr.Add("TestVal2");
+            databaseMock = new Mock<IDatabase>();
+
+            //arrange
+            databaseMock.Setup(p => p.GetWalksByUserId(It.IsAny<string>())).Returns(arr);
+            //act
+            walkService = new WalkService(databaseMock.Object);
+            var result = walkService.GetWalksByUserId("randomValue");
+            //assert
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public void TestGetAllWalksReturnsNoValues()
+        {
+            ArrayList arr = new ArrayList();
+            arr.Add("TestVal1");
+            arr.Add("TestVal2");
+            databaseMock = new Mock<IDatabase>();
+
+            //arrange
+            databaseMock.Setup(p => p.GetWalksByUserId("1234")).Returns(arr);
+            //act
+            walkService = new WalkService(databaseMock.Object);
+            var result = walkService.GetWalksByUserId("randomValue");
+            //assert
+            Assert.Null(result);
+        }
+        [Fact]
+        public void TestGetWalkMonthlyAveRatingReturnsValues()
+        {
+            ArrayList arr = new ArrayList();
+            arr.Add("TestVal1");
+            arr.Add("TestVal2");
+            databaseMock = new Mock<IDatabase>();
+
+            //arrange
+            databaseMock.Setup(p => p.GetWalkMonthlyRating(It.IsAny<string>())).Returns(arr);
+            //act
+            walkService = new WalkService(databaseMock.Object);
+            var result = walkService.GetWalkMonthlyRating("randomValue");
+            //assert
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public void TestGetWalkMonthlyAveRatingReturnsNoValues()
+        {
+            ArrayList arr = new ArrayList();
+            arr.Add("TestVal1");
+            arr.Add("TestVal2");
+            databaseMock = new Mock<IDatabase>();
+
+            //arrange
+            databaseMock.Setup(p => p.GetWalkMonthlyRating("1234")).Returns(arr);
+            //act
+            walkService = new WalkService(databaseMock.Object);
+            var result = walkService.GetWalkMonthlyRating("randomValue");
+            //assert
+            Assert.Null(result);
+        }
     }
 }
